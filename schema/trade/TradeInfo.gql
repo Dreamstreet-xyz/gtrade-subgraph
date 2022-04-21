@@ -1,0 +1,10 @@
+type TradeInfo @entity {
+  id: ID!
+  trade: Trade
+  tokenId: Int
+  tokenPriceDai: BigInt!
+  openInterestDai: BigInt!
+  tpLastUpdated: BigInt
+  slLastUpdated: BigInt
+  beingMarketClosed: Boolean!
+}

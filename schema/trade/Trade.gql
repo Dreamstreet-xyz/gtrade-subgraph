@@ -1,0 +1,74 @@
+enum TradeStatus {
+  LIMIT_ORDER_PENDING
+  OPENING
+  OPEN
+  CANCELED
+  OPEN_TIMED_OUT
+  CLOSING
+  CLOSE_TIMED_OUT
+  CLOSED
+}
+
+enum TradeType {
+  MARKET
+  LIMIT_ORDER
+}
+
+type Trade @entity {
+  "Deterministic, generated ID -- not from chain"
+  id: ID!
+
+  "Status of trade"
+  status: TradeStatus!
+
+  "Trader that created this trade"
+  trader: Trader!
+
+  "Trade type"
+  type: TradeType
+
+  "Index of asset being traded"
+  pairIndex: Int
+
+  "Index of asset specific trades open for trader"
+  index: Int
+
+  "Position size in number of asset tokens at opening price"
+  initialPosToken: BigInt
+
+  "Position size in DAI"
+  positionSizeDai: BigInt
+
+  "Asset price at open"
+  openPrice: BigInt
+
+  "Asset price at close"
+  closePrice: BigInt
+
+  "Direction of trade - true for long, false for short"
+  buy: Boolean!
+
+  "Leverage of trade"
+  leverage: Int
+
+  "Asset price of take profit"
+  tp: BigInt
+
+  "Asset price of stop loss"
+  sl: BigInt
+
+  "Trade metadata"
+  tradeInfo: TradeInfo
+
+  "Open limit order details"
+  openLimitOrder: OpenLimitOrder
+
+  "Percent profit of trade"
+  percentProfit: BigInt
+
+  "NFT order details"
+  nftOrders: [NftOrder!]! @derivedFrom(field: "trade")
+
+  "Market order details"
+  marketOrders: [MarketOrder!]! @derivedFrom(field: "trade")
+}

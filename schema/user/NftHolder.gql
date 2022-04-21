@@ -1,0 +1,6 @@
+type NftHolder @entity {
+  "Address of NFT holder"
+  id: ID!
+
+  orders: [NftOrder!] @derivedFrom(field: "nftHolder")
+}

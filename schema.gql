@@ -1,0 +1,188 @@
+type ContractTradeState @entity {
+  id: ID!
+  _pendingMarketOrdersLookup: String
+  _pendingNftOrdersLookup: String
+  _openLimitOrdersLookup: String
+  _openTradesLookup: String
+  _openTradesInfoLookup: String
+}
+
+enum TradeStatus {
+  LIMIT_ORDER_PENDING
+  OPENING
+  OPEN
+  CANCELED
+  OPEN_TIMED_OUT
+  CLOSING
+  CLOSE_TIMED_OUT
+  CLOSED
+}
+
+enum TradeType {
+  MARKET
+  LIMIT_ORDER
+}
+
+type Trade @entity {
+  "Deterministic, generated ID -- not from chain"
+  id: ID!
+  "Status of trade"
+  status: TradeStatus!
+  "Trader that created this trade"
+  trader: Trader!
+  "Trade type"
+  type: TradeType
+  "Index of asset being traded"
+  pairIndex: Int
+  "Index of asset specific trades open for trader"
+  index: Int
+  "Position size in number of asset tokens at opening price"
+  initialPosToken: BigInt
+  "Position size in DAI"
+  positionSizeDai: BigInt
+  "Asset price at open"
+  openPrice: BigInt
+  "Asset price at close"
+  closePrice: BigInt
+  "Direction of trade - true for long, false for short"
+  buy: Boolean!
+  "Leverage of trade"
+  leverage: Int
+  "Asset price of take profit"
+  tp: BigInt
+  "Asset price of stop loss"
+  sl: BigInt
+  "Trade metadata"
+  tradeInfo: TradeInfo
+  "Open limit order details"
+  openLimitOrder: OpenLimitOrder
+  "Percent profit of trade"
+  percentProfit: BigInt
+  "NFT order details"
+  nftOrders: [NftOrder!]! @derivedFrom(field: "trade")
+  "Market order details"
+  marketOrders: [MarketOrder!]! @derivedFrom(field: "trade")
+}
+
+type TradeInfo @entity {
+  id: ID!
+  trade: Trade
+  tokenId: Int
+  tokenPriceDai: BigInt!
+  openInterestDai: BigInt!
+  tpLastUpdated: BigInt
+  slLastUpdated: BigInt
+  beingMarketClosed: Boolean!
+}
+
+type NftHolder @entity {
+  "Address of NFT holder"
+  id: ID!
+  orders: [NftOrder!] @derivedFrom(field: "nftHolder")
+}
+
+type Trader @entity {
+  "Address of trader"
+  id: ID!
+  "Address of referral of trader"
+  referral: Bytes!
+  "Maximum leverage unlocked by trader"
+  leverageUnlocked: Int
+  "Total rewards of trader"
+  referralRewardsTotal: BigInt
+  "All trades"
+  trades: [Trade!] @derivedFrom(field: "trader")
+}
+
+enum OpenLimitOrderType {
+  LEGACY
+  REVERSAL
+  MOMENTUM
+}
+
+type OpenLimitOrder @entity {
+  "Generated off-chain ID"
+  id: ID!
+  "Open limit order type of trade"
+  type: OpenLimitOrderType
+  "Trade associated with order"
+  trade: Trade!
+  "Spread reduction percentage"
+  spreadReductionP: BigInt!
+  "Min price for LO execution"
+  minPrice: BigInt!
+  "Max price for LO execution"
+  maxPrice: BigInt!
+  "Block of LO execution"
+  block: BigInt!
+  "TODO"
+  tokenId: Int
+  "Executing order"
+  nftOrder: NftOrder
+}
+
+type MarketOrder implements PriceOrder @entity {
+  "Order ID -- generated on chain"
+  id: ID!
+  "Status of the order"
+  status: PriceOrderStatus!
+  "Trade of the order"
+  trade: Trade!
+  "Block of order execution"
+  block: BigInt!
+  "TODO"
+  tokenId: Int
+  "Asking open price of trade"
+  wantedPrice: BigInt!
+  "Acceptable percent change between wantedPrice and actual asset price"
+  slippageP: BigInt!
+  "Synthetic spread reduction from NFT ownership"
+  spreadReductionP: BigInt!
+  "Received price of Trade pairIndex"
+  price: BigInt
+}
+
+enum LimitOrderType {
+  TP
+  SL
+  LIQ
+  OPEN
+}
+
+type NftOrder implements PriceOrder @entity {
+  "Order ID -- generated on chain"
+  id: ID!
+  "Status of the order"
+  status: PriceOrderStatus!
+  "NFT order type"
+  type: LimitOrderType
+  "Trade of the order"
+  trade: Trade!
+  "TODO"
+  tokenId: Int
+  "Holder which triggered order"
+  nftHolder: NftHolder!
+  "NFT of holder"
+  nftId: Int!
+  "Received price of Trade pairIndex"
+  price: BigInt
+}
+
+enum PriceOrderStatus {
+  NONE
+  REQUESTED
+  RECEIVED
+}
+
+interface PriceOrder {
+  "Order ID -- generated on chain"
+  id: ID!
+  "Status of the order"
+  status: PriceOrderStatus!
+  "Trade of the order"
+  trade: Trade!
+  "TODO"
+  tokenId: Int
+  "Received price of Trade pairIndex"
+  price: BigInt
+}

@@ -1,0 +1,92 @@
+specVersion: 0.0.6
+description: >-
+  gTrade active and historical trading data
+schema:
+  file: ./schema.gql
+dataSources:
+  - kind: ethereum
+    name: GNSTradingV6
+    network: '{{network}}'
+    source:
+      address: '{{gnsTradingV6.address}}'
+      abi: GNSTradingV6
+      startBlock: {{gnsTradingV6.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - ChainlinkCallbackTimeout
+        - CouldNotCloseTrade
+        - MarketOrderInitiated
+        - NftOrderInitiated
+        - OpenLimitCanceled
+        - OpenLimitPlaced
+        - OpenLimitUpdated
+        - SlUpdateInitiated
+        - SlUpdated
+        - TpUpdated
+      abis:
+        - name: GNSTradingV6
+          file: ./abis/GNSTradingV6.json
+        - name: GFarmTradingStorageV5
+          file: ./abis/GFarmTradingStorageV5.json
+      eventHandlers:
+        - event: ChainlinkCallbackTimeout(uint256,((address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256))
+          handler: handleChainlinkCallbackTimeout
+        - event: CouldNotCloseTrade(address,uint256,uint256)
+          handler: handleCouldNotCloseTrade
+        - event: MarketOrderInitiated(address,uint256,bool,uint256)
+          handler: handleMarketOrderInitiated
+        - event: NftOrderInitiated(address,address,uint256,uint256)
+          handler: handleNftOrderInitiated
+        - event: OpenLimitCanceled(address,uint256,uint256)
+          handler: handleOpenLimitCanceled
+        - event: OpenLimitPlaced(address,uint256,uint256)
+          handler: handleOpenLimitPlaced
+        - event: OpenLimitUpdated(address,uint256,uint256,uint256,uint256,uint256)
+          handler: handleOpenLimitUpdated
+        - event: SlUpdateInitiated(address,uint256,uint256,uint256,uint256)
+          handler: handleSlUpdateInitiated
+        - event: SlUpdated(address,uint256,uint256,uint256)
+          handler: handleSlUpdated
+        - event: TpUpdated(address,uint256,uint256,uint256)
+          handler: handleTpUpdated
+      file: ./src/handlers/GNSTradingV6/index.ts
+  - kind: ethereum
+    name: GNSTradingCallbacksV6
+    network: '{{network}}'
+    source:
+      address: '{{gnsTradingCallbacksV6.address}}'
+      abi: GNSTradingV6
+      startBlock: {{gnsTradingCallbacksV6.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - LimitExecuted
+        - MarketCloseCanceled
+        - MarketExecuted
+        - MarketOpenCanceled
+        - SlCanceled
+        - SlUpdated
+      abis:
+        - name: GNSTradingCallbacksV6
+          file: ./abis/GNSTradingCallbacksV6.json
+        - name: GFarmTradingStorageV5
+          file: ./abis/GFarmTradingStorageV5.json
+      eventHandlers:
+        - event: LimitExecuted(uint256,uint256,(address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),address,uint8,uint256,uint256,int256)
+          handler: handleLimitExecuted
+        - event: MarketCloseCanceled(uint256,address,uint256,uint256)
+          handler: handleMarketCloseCanceled
+        - event: MarketExecuted(uint256,(address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),bool,uint256,uint256,int256)
+          handler: handleMarketExecuted
+        - event: MarketOpenCanceled(uint256,address,uint256)
+          handler: handleMarketOpenCanceled
+        - event: SlCanceled(uint256,address,uint256,uint256)
+          handler: handleSlCanceled
+        - event: SlUpdated(uint256,address,uint256,uint256,uint256)
+          handler: handleSlUpdated
+      file: ./src/handlers/GNSTradingCallbacksV6/index.ts

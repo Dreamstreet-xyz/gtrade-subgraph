@@ -1,0 +1,32 @@
+enum LimitOrderType {
+  TP
+  SL
+  LIQ
+  OPEN
+}
+
+type NftOrder implements PriceOrder @entity {
+  "Order ID -- generated on chain"
+  id: ID!
+
+  "Status of the order"
+  status: PriceOrderStatus!
+
+  "NFT order type"
+  type: LimitOrderType
+
+  "Trade of the order"
+  trade: Trade!
+
+  "TODO"
+  tokenId: Int
+
+  "Holder which triggered order"
+  nftHolder: NftHolder!
+
+  "NFT of holder"
+  nftId: Int!
+
+  "Received price of Trade pairIndex"
+  price: BigInt
+}

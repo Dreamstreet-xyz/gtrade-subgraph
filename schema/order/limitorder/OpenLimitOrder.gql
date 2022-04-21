@@ -1,0 +1,34 @@
+enum OpenLimitOrderType {
+  LEGACY
+  REVERSAL
+  MOMENTUM
+}
+
+type OpenLimitOrder @entity {
+  "Generated off-chain ID"
+  id: ID!
+
+  "Open limit order type of trade"
+  type: OpenLimitOrderType
+
+  "Trade associated with order"
+  trade: Trade!
+
+  "Spread reduction percentage"
+  spreadReductionP: BigInt!
+
+  "Min price for LO execution"
+  minPrice: BigInt!
+
+  "Max price for LO execution"
+  maxPrice: BigInt!
+
+  "Block of LO execution"
+  block: BigInt!
+
+  "TODO"
+  tokenId: Int
+
+  "Executing order"
+  nftOrder: NftOrder
+}

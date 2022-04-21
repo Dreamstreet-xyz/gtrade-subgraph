@@ -1,0 +1,28 @@
+type MarketOrder implements PriceOrder @entity {
+  "Order ID -- generated on chain"
+  id: ID!
+
+  "Status of the order"
+  status: PriceOrderStatus!
+
+  "Trade of the order"
+  trade: Trade!
+
+  "Block of order execution"
+  block: BigInt!
+
+  "TODO"
+  tokenId: Int
+
+  "Asking open price of trade"
+  wantedPrice: BigInt!
+
+  "Acceptable percent change between wantedPrice and actual asset price"
+  slippageP: BigInt!
+
+  "Synthetic spread reduction from NFT ownership"
+  spreadReductionP: BigInt!
+
+  "Received price of Trade pairIndex"
+  price: BigInt
+}

@@ -1,0 +1,16 @@
+type Trader @entity {
+  "Address of trader"
+  id: ID!
+
+  "Address of referral of trader"
+  referral: Bytes!
+
+  "Maximum leverage unlocked by trader"
+  leverageUnlocked: Int
+
+  "Total rewards of trader"
+  referralRewardsTotal: BigInt
+
+  "All trades"
+  trades: [Trade!] @derivedFrom(field: "trader")
+}

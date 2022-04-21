@@ -1,0 +1,22 @@
+enum PriceOrderStatus {
+  NONE
+  REQUESTED
+  RECEIVED
+}
+
+interface PriceOrder {
+  "Order ID -- generated on chain"
+  id: ID!
+
+  "Status of the order"
+  status: PriceOrderStatus!
+
+  "Trade of the order"
+  trade: Trade!
+
+  "TODO"
+  tokenId: Int
+
+  "Received price of Trade pairIndex"
+  price: BigInt
+}
