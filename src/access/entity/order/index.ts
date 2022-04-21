@@ -16,3 +16,4 @@ export function generateOrderId(
 }
 
 export { updateNftOrderFromContractObject } from "./NftOrder";
+export { updateOpenLimitOrderFromContractObject } from "./OpenLimitOrder";

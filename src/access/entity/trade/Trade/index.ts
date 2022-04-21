@@ -1,5 +1,8 @@
 import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
-import { GFarmTradingStorageV5__openTradesResult } from "types/GNSTradingV6/GFarmTradingStorageV5";
+import {
+  GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
+  GFarmTradingStorageV5__openTradesResult,
+} from "types/GNSTradingV6/GFarmTradingStorageV5";
 import { Trade } from "types/schema";
 
 export type TradeTuple = {
@@ -83,5 +86,25 @@ export function updateTradeFromContractObject(
   if (save) {
     trade.save();
   }
+  return trade;
+}
+
+export function updateTradeFromOpenLimitOrderContractObject(
+  trade: Trade,
+  cOpenLimitOrder: GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
+  save: boolean
+): Trade {
+  trade.pairIndex = cOpenLimitOrder.pairIndex;
+  trade.index = cOpenLimitOrder.index;
+  trade.positionSizeDai = cOpenLimitOrder.positionSize;
+  trade.buy = cOpenLimitOrder.buy;
+  trade.leverage = cOpenLimitOrder.leverage;
+  trade.tp = cOpenLimitOrder.tp;
+  trade.sl = cOpenLimitOrder.sl;
+
+  if (save) {
+    trade.save();
+  }
+
   return trade;
 }

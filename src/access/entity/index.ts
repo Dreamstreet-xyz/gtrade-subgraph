@@ -14,12 +14,17 @@ export {
   addPendingNftOrder,
   removePendingNftOrder,
 } from "./trade/ContractTradeState";
-export { generateOrderId, updateNftOrderFromContractObject } from "./order";
+export {
+  generateOrderId,
+  updateNftOrderFromContractObject,
+  updateOpenLimitOrderFromContractObject,
+} from "./order";
 export {
   generateTradeId,
   generateIdFromRawTradeTuple,
   generateIdFromTradeTuple,
   updateTradeFromContractObject,
+  updateTradeFromOpenLimitOrderContractObject,
 } from "./trade/Trade";
 export {
   generateTradeInfoId,

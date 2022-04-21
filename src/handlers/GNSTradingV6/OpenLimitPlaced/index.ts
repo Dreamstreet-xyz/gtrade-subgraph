@@ -4,6 +4,9 @@ import {
   generateOrderId,
   generateTradeId,
   generateIdFromRawTradeTuple,
+  updateOpenLimitOrderFromContractObject,
+  updateTradeFromOpenLimitOrderContractObject,
+  addOpenLimitOrder,
 } from "access/entity";
 import { getStorageContract } from "access/contract";
 import { TRADE_STATUS, TRADE_TYPE } from "constants/index";
@@ -34,51 +37,6 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
 
   // get open limit order
   const cOpenLimitOrder = storage.openLimitOrders(cOpenLimitOrderId);
-  const [
-    _trader,
-    _pairIndex,
-    _index,
-    positionSize,
-    spreadReductionP,
-    buy,
-    leverage,
-    tp,
-    sl,
-    minPrice,
-    maxPrice,
-    block,
-    tokenId,
-  ] = [
-    cOpenLimitOrder.value0,
-    cOpenLimitOrder.value1,
-    cOpenLimitOrder.value2,
-    cOpenLimitOrder.value3,
-    cOpenLimitOrder.value4,
-    cOpenLimitOrder.value5,
-    cOpenLimitOrder.value6,
-    cOpenLimitOrder.value7,
-    cOpenLimitOrder.value8,
-    cOpenLimitOrder.value9,
-    cOpenLimitOrder.value10,
-    cOpenLimitOrder.value11,
-    cOpenLimitOrder.value12,
-  ];
-
-  // sanity check event and contract tuples
-  if (trader !== _trader || pairIndex !== _pairIndex || index !== _index) {
-    log.error(
-      "[handleOpenLimitPlaced] Mismatch between contract storage and event params, {}/{} | {}/{} | {}/{}",
-      [
-        trader.toHexString(),
-        _trader.toHexString(),
-        pairIndex.toString(),
-        _pairIndex.toString(),
-        index.toString(),
-        _index.toString(),
-      ]
-    );
-    return;
-  }
 
   // construct OpenLimitOrder
   const openLimitOrderId = generateOrderId(
@@ -86,12 +44,11 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     event.logIndex,
     cOpenLimitOrderId
   );
-  const openLimitOrder = new OpenLimitOrder(openLimitOrderId);
-  openLimitOrder.spreadReductionP = spreadReductionP;
-  openLimitOrder.minPrice = minPrice;
-  openLimitOrder.maxPrice = maxPrice;
-  openLimitOrder.block = block;
-  openLimitOrder.tokenId = tokenId;
+  const openLimitOrder = updateOpenLimitOrderFromContractObject(
+    new OpenLimitOrder(openLimitOrderId),
+    cOpenLimitOrder,
+    false
+  );
 
   // TODO: update this to use contract value rather than tx input
   const txInput = ethereum.decode(
@@ -106,16 +63,13 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     pairIndex,
     index,
   });
-  const trade = new Trade(tradeId);
+  const trade = updateTradeFromOpenLimitOrderContractObject(
+    new Trade(tradeId),
+    cOpenLimitOrder,
+    false
+  );
   trade.trader = trader.toHexString();
   trade.type = TRADE_TYPE.LIMIT_ORDER_TRADE;
-  trade.pairIndex = pairIndex;
-  trade.index = index;
-  trade.positionSizeDai = positionSize;
-  trade.buy = buy;
-  trade.leverage = leverage;
-  trade.tp = tp;
-  trade.sl = sl;
   trade.status = TRADE_STATUS.LIMIT_ORDER_PENDING;
 
   // reference one another
@@ -123,14 +77,12 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   openLimitOrder.trade = trade.id;
 
   // read active state and update
-  const tradesState = getTradesState();
-  const pendingLimitOrdersLookup = JSON.parse(
-    tradesState._openLimitOrdersLookup || "{}"
+  const tradesState = addOpenLimitOrder(
+    getTradesState(),
+    { trader, pairIndex, index },
+    openLimitOrder.id,
+    false
   );
-  pendingLimitOrdersLookup[
-    generateIdFromRawTradeTuple(trader, pairIndex, index)
-  ] = tradeId;
-  tradesState._openLimitOrdersLookup = JSON.stringify(pendingLimitOrdersLookup);
 
   // save
   openLimitOrder.save();
