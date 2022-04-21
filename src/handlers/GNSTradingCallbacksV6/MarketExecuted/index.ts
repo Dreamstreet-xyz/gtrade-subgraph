@@ -1,4 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
+import { log, BigInt } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "access/contract";
 import {
   getTradesState,
@@ -9,13 +9,17 @@ import {
   addOpenTrade,
   addOpenTradeInfo,
 } from "access/entity";
+import {
+  removeOpenTrade,
+  removeOpenTradeInfo,
+} from "access/entity/trade/ContractTradeState";
 import { getPendingMarketOrderId } from "access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
 import { PRICE_ORDER_STATUS, TRADE_STATUS } from "constants/index";
 import { MarketExecuted } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
 import { MarketOrder, Trade, TradeInfo } from "types/schema";
 
 /**
- * Event is emitted when a market order trade is opened following price details.
+ * Event is emitted when a market order trade is opened or closed following price details.
  *
  * Basic flow:
  * a. transition MarketOrder to received
@@ -50,6 +54,7 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     return;
   }
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
+  marketOrder.price = price;
 
   // update Trade
   let trade = Trade.load(marketOrder.trade);
@@ -60,40 +65,55 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     );
     return;
   }
-  // should be able to use 't' from event but for certainty, reading state
-  const cTrade = storage.openTrades(trader, pairIndex, index);
-  trade = updateTradeFromContractObject(trade, cTrade, false);
-  trade.status = TRADE_STATUS.OPEN;
 
-  const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
-  const tradeInfoId = generateTradeInfoId(event.transaction, event.logIndex, {
-    trader,
-    pairIndex,
-    index,
-  });
-  const tradeInfo = updateTradeInfoFromContractObject(
-    new TradeInfo(tradeInfoId),
-    cTradeInfo,
-    false
-  );
+  if (open) {
+    // should be able to use 't' from event but for certainty, reading state
+    const cTrade = storage.openTrades(trader, pairIndex, index);
+    trade = updateTradeFromContractObject(trade, cTrade, false);
+    trade.status = TRADE_STATUS.OPEN;
 
-  // associate trade with trade info
-  tradeInfo.trade = trade.id;
-  trade.tradeInfo = tradeInfo.id;
+    const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
+    const tradeInfoId = generateTradeInfoId(event.transaction, event.logIndex, {
+      trader,
+      pairIndex,
+      index,
+    });
+    const tradeInfo = updateTradeInfoFromContractObject(
+      new TradeInfo(tradeInfoId),
+      cTradeInfo,
+      false
+    );
+
+    // associate trade with trade info
+    tradeInfo.trade = trade.id;
+    trade.tradeInfo = tradeInfo.id;
+
+    // update state
+    state = addOpenTrade(state, { trader, pairIndex, index }, trade.id, false);
+    state = addOpenTradeInfo(
+      state,
+      { trader, pairIndex, index },
+      tradeInfo.id,
+      false
+    );
+
+    // save
+    tradeInfo.save();
+  } else {
+    trade.status = TRADE_STATUS.CLOSED;
+    trade.percentProfit = BigInt.fromI32(-100);
+    trade.closePrice = price;
+
+    // update state
+    state = removeOpenTrade(state, { trader, pairIndex, index }, false);
+    state = removeOpenTradeInfo(state, { trader, pairIndex, index }, false);
+  }
 
   // update state
   state = removePendingMarketOrder(state, orderId.toString(), false);
-  state = addOpenTrade(state, { trader, pairIndex, index }, trade.id, false);
-  state = addOpenTradeInfo(
-    state,
-    { trader, pairIndex, index },
-    tradeInfo.id,
-    false
-  );
 
   // save
   marketOrder.save();
   trade.save();
-  tradeInfo.save();
   state.save();
 }

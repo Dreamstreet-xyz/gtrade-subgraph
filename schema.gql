@@ -9,6 +9,7 @@ type ContractTradeState @entity {
 
 enum TradeStatus {
   LIMIT_ORDER_PENDING
+  LIMIT_ORDER_CANCELED
   OPENING
   OPEN
   CANCELED
@@ -94,6 +95,12 @@ type Trader @entity {
   trades: [Trade!] @derivedFrom(field: "trader")
 }
 
+enum OpenLimitOrderStatus {
+  OPEN
+  CANCELED
+  FULFILLED
+}
+
 enum OpenLimitOrderType {
   LEGACY
   REVERSAL
@@ -103,8 +110,10 @@ enum OpenLimitOrderType {
 type OpenLimitOrder @entity {
   "Generated off-chain ID"
   id: ID!
-  "Open limit order type of trade"
+  "Type of open limit order"
   type: OpenLimitOrderType
+  "Status of open limit order"
+  status: OpenLimitOrderStatus
   "Trade associated with order"
   trade: Trade!
   "Spread reduction percentage"

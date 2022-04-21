@@ -1,3 +1,9 @@
+enum OpenLimitOrderStatus {
+  OPEN
+  CANCELED
+  FULFILLED
+}
+
 enum OpenLimitOrderType {
   LEGACY
   REVERSAL
@@ -8,8 +14,11 @@ type OpenLimitOrder @entity {
   "Generated off-chain ID"
   id: ID!
 
-  "Open limit order type of trade"
+  "Type of open limit order"
   type: OpenLimitOrderType
+
+  "Status of open limit order"
+  status: OpenLimitOrderStatus
 
   "Trade associated with order"
   trade: Trade!
