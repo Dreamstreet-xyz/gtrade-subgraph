@@ -37,11 +37,13 @@ export const TRADE_TYPE = {
 
 export const NONE = "NONE";
 export const REQUESTED = "REQUESTED";
+export const TIMED_OUT = "TIMED_OUT";
 export const RECEIVED = "RECEIVED";
 
 export const PRICE_ORDER_STATUS = {
   NONE,
   REQUESTED,
+  TIMED_OUT,
   RECEIVED,
 };
 
@@ -68,4 +70,12 @@ export const OPEN_LIMIT_ORDER_STATUS = {
   OPEN: "OPEN",
   CANCELED: "CANCELED",
   FULFILLED: "FULFILLED",
+};
+
+export const PRICE_ORDER_TYPE = {
+  MARKET_OPEN: "MARKET_OPEN",
+  MARKET_CLOSE: "MARKET_CLOSE",
+  LIMIT_OPEN: "LIMIT_OPEN",
+  LIMIT_CLOSE: "LIMIT_CLOSE",
+  UPDATE_SL: "UPDATE_SL",
 };

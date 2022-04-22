@@ -2,6 +2,7 @@ type ContractTradeState @entity {
   id: ID!
   _pendingMarketOrdersLookup: String
   _pendingNftOrdersLookup: String
+  _pendingSlUpdateOrdersLookup: String
   _openLimitOrdersLookup: String
   _openTradesLookup: String
   _openTradesInfoLookup: String
@@ -69,11 +70,11 @@ type TradeInfo @entity {
   id: ID!
   trade: Trade
   tokenId: Int
-  tokenPriceDai: BigInt!
-  openInterestDai: BigInt!
+  tokenPriceDai: BigInt
+  openInterestDai: BigInt
   tpLastUpdated: BigInt
   slLastUpdated: BigInt
-  beingMarketClosed: Boolean!
+  beingMarketClosed: Boolean
 }
 
 type NftHolder @entity {
@@ -135,6 +136,8 @@ type MarketOrder implements PriceOrder @entity {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "Type of order"
+  type: PriceOrderType
   "Trade of the order"
   trade: Trade!
   "Block of order execution"
@@ -163,8 +166,10 @@ type NftOrder implements PriceOrder @entity {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "Type of order"
+  type: PriceOrderType
   "NFT order type"
-  type: LimitOrderType
+  nftOrderType: LimitOrderType
   "Trade of the order"
   trade: Trade!
   "TODO"
@@ -180,7 +185,16 @@ type NftOrder implements PriceOrder @entity {
 enum PriceOrderStatus {
   NONE
   REQUESTED
+  TIMED_OUT
   RECEIVED
+}
+
+enum PriceOrderType {
+  MARKET_OPEN
+  MARKET_CLOSE
+  LIMIT_OPEN
+  LIMIT_CLOSE
+  UPDATE_SL
 }
 
 interface PriceOrder {
@@ -188,10 +202,29 @@ interface PriceOrder {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "Type of order"
+  type: PriceOrderType
   "Trade of the order"
   trade: Trade!
   "TODO"
   tokenId: Int
   "Received price of Trade pairIndex"
   price: BigInt
+}
+
+type SlUpdateOrder implements PriceOrder @entity {
+  "Order ID -- generated on chain"
+  id: ID!
+  "Status of the order"
+  status: PriceOrderStatus!
+  "Type of order"
+  type: PriceOrderType
+  "Trade of the order"
+  trade: Trade!
+  "TODO"
+  tokenId: Int
+  "Received price of Trade pairIndex"
+  price: BigInt
+  "Requested updated SL of trade"
+  newSl: BigInt
 }

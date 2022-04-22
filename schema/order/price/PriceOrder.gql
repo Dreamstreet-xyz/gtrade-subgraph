@@ -1,7 +1,16 @@
 enum PriceOrderStatus {
   NONE
   REQUESTED
+  TIMED_OUT
   RECEIVED
+}
+
+enum PriceOrderType {
+  MARKET_OPEN
+  MARKET_CLOSE
+  LIMIT_OPEN
+  LIMIT_CLOSE
+  UPDATE_SL
 }
 
 interface PriceOrder {
@@ -10,6 +19,9 @@ interface PriceOrder {
 
   "Status of the order"
   status: PriceOrderStatus!
+
+  "Type of order"
+  type: PriceOrderType
 
   "Trade of the order"
   trade: Trade!

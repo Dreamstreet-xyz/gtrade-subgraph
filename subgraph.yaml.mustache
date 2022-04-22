@@ -17,7 +17,6 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - ChainlinkCallbackTimeout
-        - CouldNotCloseTrade
         - MarketOrderInitiated
         - NftOrderInitiated
         - OpenLimitCanceled
@@ -31,11 +30,11 @@ dataSources:
           file: ./abis/GNSTradingV6.json
         - name: GFarmTradingStorageV5
           file: ./abis/GFarmTradingStorageV5.json
+        - name: GNSPriceAggregatorV6
+          file: ./abis/GNSPriceAggregatorV6.json
       eventHandlers:
         - event: ChainlinkCallbackTimeout(uint256,((address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256))
           handler: handleChainlinkCallbackTimeout
-        - event: CouldNotCloseTrade(address,uint256,uint256)
-          handler: handleCouldNotCloseTrade
         - event: MarketOrderInitiated(address,uint256,bool,uint256)
           handler: handleMarketOrderInitiated
         - event: NftOrderInitiated(address,address,uint256,uint256)
@@ -74,8 +73,6 @@ dataSources:
       abis:
         - name: GNSTradingCallbacksV6
           file: ./abis/GNSTradingCallbacksV6.json
-        - name: GFarmTradingStorageV5
-          file: ./abis/GFarmTradingStorageV5.json
       eventHandlers:
         - event: LimitExecuted(uint256,uint256,(address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),address,uint8,uint256,uint256,int256)
           handler: handleLimitExecuted

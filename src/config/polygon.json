@@ -1,5 +1,5 @@
 {
-  "network": "polygon",
+  "network": "mumbai",
   "gnsTradingV6": {
     "address": "0x49370DC7319d8439C895015cBAD8E35D381e7d73",
     "startBlock": 25940000
@@ -10,6 +10,10 @@
   },
   "gfarmTradingStorageV5": {
     "address": "0x4d2df485c608aa55a23d8d98dd2b4fa24ba0f2cf",
+    "startBlock": 25940000
+  },
+  "gnsPriceAggregatorV6": {
+    "address": "0x16E4F4956f39dd37E170C9f7A4AFeCD4025F272a",
     "startBlock": 25940000
   }
 }

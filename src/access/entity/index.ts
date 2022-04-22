@@ -2,8 +2,10 @@ export { getTradesState } from "./trade/ContractTradeState";
 export {
   getOpenTradeInfoId,
   addOpenTradeInfo,
+  removeOpenTradeInfo,
   getOpenTradeId,
   addOpenTrade,
+  removeOpenTrade,
   getPendingMarketOrderId,
   addPendingMarketOrder,
   removePendingMarketOrder,
@@ -13,6 +15,9 @@ export {
   getPendingNftOrderId,
   addPendingNftOrder,
   removePendingNftOrder,
+  getPendingSlUpdateOrderId,
+  addPendingSlUpdateOrder,
+  removePendingSlUpdateOrder,
 } from "./trade/ContractTradeState";
 export {
   generateOrderId,
@@ -31,3 +36,4 @@ export {
   updateTradeInfoFromContractObject,
 } from "./trade/TradeInfo";
 export { getNftHolderOrCreate, createNftHolderIfDne } from "./user/NftHolder";
+export { updateTradeAndTradeInfoToLatestFromTuple } from "./trade";

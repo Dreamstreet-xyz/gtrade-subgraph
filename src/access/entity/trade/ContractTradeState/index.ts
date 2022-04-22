@@ -55,3 +55,9 @@ export {
   addPendingNftOrder,
   removePendingNftOrder,
 } from "./pendingNftOrdersLookup";
+
+export {
+  getPendingSlUpdateOrderId,
+  addPendingSlUpdateOrder,
+  removePendingSlUpdateOrder,
+} from "./pendingSlUpdateOrdersLookup";

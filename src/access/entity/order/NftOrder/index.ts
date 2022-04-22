@@ -18,7 +18,7 @@ export function updateNftOrderFromContractObject(
 
   nftOrder.nftHolder = nftHolder.toHexString();
   nftOrder.nftId = nftId;
-  nftOrder.type = LIMIT_ORDER_IX[orderType];
+  nftOrder.nftOrderType = LIMIT_ORDER_IX[orderType];
 
   if (save) {
     nftOrder.save();

@@ -5,6 +5,9 @@ type MarketOrder implements PriceOrder @entity {
   "Status of the order"
   status: PriceOrderStatus!
 
+  "Type of order"
+  type: PriceOrderType
+
   "Trade of the order"
   trade: Trade!
 
