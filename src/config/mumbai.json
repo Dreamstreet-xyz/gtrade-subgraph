@@ -5,7 +5,7 @@
     "startBlock": 25940000
   },
   "gnsTradingCallbacksV6": {
-    "address": "0x3087aC91A2D49f84D795d6c2Ce324845360f57c8",
+    "address": "0xbd124b3dae1fadeb421db545ddcb4c2146d60627",
     "startBlock": 25940000
   },
   "gfarmTradingStorageV5": {
@@ -13,11 +13,11 @@
     "startBlock": 25940000
   },
   "gnsPriceAggregatorV6": {
-    "address": "0x16E4F4956f39dd37E170C9f7A4AFeCD4025F272a",
+    "address": "0x5f105e929789fcae415cb03ea28d1f60c6091d6d",
     "startBlock": 25940000
   },
   "gnsNftRewardsV6": {
-    "address": "0x3470756E5B490a974Bc25FeEeEb24c11102f5268",
+    "address": "0x3982e3de77dad60373c0c2c539fcb93bd288d2f5",
     "startBlock": 25940000
   }
 }

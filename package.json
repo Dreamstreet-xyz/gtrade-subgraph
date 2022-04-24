@@ -22,7 +22,7 @@
     "prepare:mumbai": "mustache src/config/mumbai.json subgraph.yaml.mustache > subgraph.yaml",
     "deploy:rinkeby": "yarn clean && yarn prepare:rinkeby && yarn codegen && yarn deploy b01-dao/b01-subgraph-rinkeby",
     "deploy:mainnet": "yarn clean && yarn prepare:mainnet && yarn codegen && yarn deploy b01-dao/b01-subgraph",
-    "deploy:mumbai": "yarn clean && yarn configure:mumbai && yarn prepare:mumbai && yarn codegen && yarn deploy:hosted b01-dao/b01-mumbai"
+    "deploy:mumbai": "yarn clean && yarn configure:mumbai && yarn deploy:hosted dreamstreet-xyz/gtrade-v6-mumbai"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.20.1",
