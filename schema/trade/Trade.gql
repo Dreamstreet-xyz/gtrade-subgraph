@@ -16,7 +16,7 @@ enum TradeType {
 }
 
 type Trade @entity {
-  "Deterministic, generated ID -- not from chain"
+  "Generated off-chain ID"
   id: ID!
 
   "Status of trade"

@@ -1,5 +1,6 @@
 import { ethereum, log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "access/contract";
+import { getPriceAggregatorContract } from "access/contract/GNSPriceAggregatorV6";
 import {
   generateOrderId,
   getTradesState,
@@ -12,8 +13,9 @@ import {
 import {
   TRADE_STATUS,
   PRICE_ORDER_STATUS,
-  LIMIT_ORDER,
-  LIMIT_ORDER_IX,
+  LIMIT_ORDER_TYPE,
+  LIMIT_ORDER_TYPE_IX,
+  PRICE_ORDER_TYPE_IX,
 } from "constants/index";
 import { NftOrderInitiated } from "types/GNSTradingV6/GNSTradingV6";
 import { NftOrder, OpenLimitOrder, Trade } from "types/schema";
@@ -45,6 +47,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   //     ];
 
   const storage = getStorageContract();
+  const aggregator = getPriceAggregatorContract();
   let state = getTradesState();
 
   // create NftHolder if dne
@@ -58,12 +61,13 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     false
   );
   nftOrder.status = PRICE_ORDER_STATUS.REQUESTED;
+  nftOrder.type = PRICE_ORDER_TYPE_IX[aggregator.orders(orderId).value1];
 
   const index = cPendingNftOrder.value4;
   const orderType = cPendingNftOrder.value5;
 
   let tradeId;
-  if (LIMIT_ORDER_IX[orderType] === LIMIT_ORDER.OPEN) {
+  if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
     // lookup OpenLimitOrder to get Trade obj for updating
     const openLimitOrderId = getOpenLimitOrderId(state, {
       trader,
@@ -102,7 +106,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     return;
   }
   trade.status =
-    LIMIT_ORDER_IX[orderType] === LIMIT_ORDER.OPEN
+    LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN
       ? TRADE_STATUS.OPENING
       : TRADE_STATUS.CLOSING;
 

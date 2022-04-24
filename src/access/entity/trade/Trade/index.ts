@@ -24,7 +24,7 @@ export function generateTradeId(
   tradeTuple: TradeTuple
 ): string {
   return (
-    tx.hash.toHex() +
+    tx.hash.toHexString() +
     "-" +
     logIndex.toString() +
     generateIdFromTradeTuple(tradeTuple)
@@ -36,11 +36,11 @@ export function generateIdFromRawTradeTuple(
   pairIndex: BigInt,
   index: BigInt
 ): string {
-  return `${trader.toHex()}-${pairIndex.toString()}-${index.toString()}`;
+  return `${trader.toHexString()}-${pairIndex.toString()}-${index.toString()}`;
 }
 
 export function generateIdFromTradeTuple(tradeTuple: TradeTuple): string {
-  return `${tradeTuple.trader.toHex()}-${tradeTuple.pairIndex.toString()}-${tradeTuple.index.toString()}`;
+  return `${tradeTuple.trader.toHexString()}-${tradeTuple.pairIndex.toString()}-${tradeTuple.index.toString()}`;
 }
 
 export function updateTradeFromContractObject(
@@ -71,6 +71,10 @@ export function updateTradeFromContractObject(
     cTrade.value8,
     cTrade.value9,
   ];
+
+  if (Number(leverage) === 0) {
+    throw Error("[updateTradeFromContractObject] No trade");
+  }
 
   trade.trader = trader.toHexString();
   trade.pairIndex = pairIndex;

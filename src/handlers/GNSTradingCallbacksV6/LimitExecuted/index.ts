@@ -17,8 +17,8 @@ import {
   removeOpenTradeInfo,
 } from "access/entity/trade/ContractTradeState";
 import {
-  LIMIT_ORDER,
-  LIMIT_ORDER_IX,
+  LIMIT_ORDER_TYPE,
+  LIMIT_ORDER_TYPE_IX,
   PRICE_ORDER_STATUS,
   TRADE_STATUS,
 } from "constants/index";
@@ -58,7 +58,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   nftOrder.price = price;
 
   // opening trade
-  if (LIMIT_ORDER_IX[orderType] === LIMIT_ORDER.OPEN) {
+  if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
     // update OpenLimitOrder
     // assign NftOrder to OpenLimitOrder
     const openLimitOrderId = getOpenLimitOrderId(state, tuple);

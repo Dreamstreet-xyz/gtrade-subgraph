@@ -26,7 +26,7 @@ enum TradeType {
 }
 
 type Trade @entity {
-  "Deterministic, generated ID -- not from chain"
+  "Generated off-chain ID"
   id: ID!
   "Status of trade"
   status: TradeStatus!
@@ -115,24 +115,23 @@ type OpenLimitOrder @entity {
   type: OpenLimitOrderType
   "Status of open limit order"
   status: OpenLimitOrderStatus
-  "Trade associated with order"
+  "Trade associated with open limit order"
   trade: Trade!
   "Spread reduction percentage"
   spreadReductionP: BigInt!
-  "Min price for LO execution"
+  "Min price for limit order execution"
   minPrice: BigInt!
-  "Max price for LO execution"
+  "Max price for limit order execution"
   maxPrice: BigInt!
-  "Block of LO execution"
+  "Block of limit order execution"
   block: BigInt!
-  "TODO"
   tokenId: Int
   "Executing order"
   nftOrder: NftOrder
 }
 
 type MarketOrder implements PriceOrder @entity {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
@@ -142,15 +141,14 @@ type MarketOrder implements PriceOrder @entity {
   trade: Trade!
   "Block of order execution"
   block: BigInt!
-  "TODO"
   tokenId: Int
   "Asking open price of trade"
   wantedPrice: BigInt!
-  "Acceptable percent change between wantedPrice and actual asset price"
+  "Acceptable percent change between wantedPrice and actual open price"
   slippageP: BigInt!
   "Synthetic spread reduction from NFT ownership"
   spreadReductionP: BigInt!
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
 }
 
@@ -162,7 +160,7 @@ enum LimitOrderType {
 }
 
 type NftOrder implements PriceOrder @entity {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
@@ -172,13 +170,12 @@ type NftOrder implements PriceOrder @entity {
   nftOrderType: LimitOrderType
   "Trade of the order"
   trade: Trade!
-  "TODO"
   tokenId: Int
   "Holder which triggered order"
   nftHolder: NftHolder!
   "NFT of holder"
   nftId: Int!
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
 }
 
@@ -198,7 +195,7 @@ enum PriceOrderType {
 }
 
 interface PriceOrder {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
@@ -206,14 +203,13 @@ interface PriceOrder {
   type: PriceOrderType
   "Trade of the order"
   trade: Trade!
-  "TODO"
   tokenId: Int
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
 }
 
 type SlUpdateOrder implements PriceOrder @entity {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
@@ -221,9 +217,8 @@ type SlUpdateOrder implements PriceOrder @entity {
   type: PriceOrderType
   "Trade of the order"
   trade: Trade!
-  "TODO"
   tokenId: Int
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
   "Requested updated SL of trade"
   newSl: BigInt

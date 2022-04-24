@@ -12,7 +12,7 @@ export function generateOrderId(
   logIndex: BigInt,
   id: BigInt
 ): string {
-  return tx.hash.toHex() + "-" + logIndex.toString() + id.toString();
+  return tx.hash.toHexString() + "-" + logIndex.toString() + id.toString();
 }
 
 export { updateNftOrderFromContractObject } from "./NftOrder";

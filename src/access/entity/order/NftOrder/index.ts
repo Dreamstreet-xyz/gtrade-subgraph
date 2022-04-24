@@ -1,4 +1,4 @@
-import { LIMIT_ORDER_IX } from "constants/index";
+import { LIMIT_ORDER_TYPE_IX, ZERO_ADDRESS } from "constants/index";
 import { GFarmTradingStorageV5__reqID_pendingNftOrderResult } from "types/GNSTradingV6/GFarmTradingStorageV5";
 import { NftOrder } from "types/schema";
 
@@ -16,9 +16,13 @@ export function updateNftOrderFromContractObject(
     cNftOrder.value5,
   ];
 
+  if (trader.toHexString() === ZERO_ADDRESS) {
+    throw Error("[updateNftOrderFromContractObject] No cNftOrder");
+  }
+
   nftOrder.nftHolder = nftHolder.toHexString();
   nftOrder.nftId = nftId;
-  nftOrder.nftOrderType = LIMIT_ORDER_IX[orderType];
+  nftOrder.nftOrderType = LIMIT_ORDER_TYPE_IX[orderType];
 
   if (save) {
     nftOrder.save();

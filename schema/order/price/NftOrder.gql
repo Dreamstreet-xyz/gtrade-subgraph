@@ -6,7 +6,7 @@ enum LimitOrderType {
 }
 
 type NftOrder implements PriceOrder @entity {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
 
   "Status of the order"
@@ -21,7 +21,6 @@ type NftOrder implements PriceOrder @entity {
   "Trade of the order"
   trade: Trade!
 
-  "TODO"
   tokenId: Int
 
   "Holder which triggered order"
@@ -30,6 +29,6 @@ type NftOrder implements PriceOrder @entity {
   "NFT of holder"
   nftId: Int!
 
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
 }

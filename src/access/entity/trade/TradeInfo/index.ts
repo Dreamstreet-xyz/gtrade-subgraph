@@ -15,7 +15,7 @@ export function generateTradeInfoId(
   tradeTuple: TradeTuple
 ): string {
   return (
-    tx.hash.toHex() +
+    tx.hash.toHexString() +
     "-" +
     logIndex.toString() +
     generateIdFromTradeTuple(tradeTuple)
@@ -42,6 +42,10 @@ export function updateTradeInfoFromContractObject(
     cTradeInfo.value4,
     cTradeInfo.value5,
   ];
+
+  if (Number(tokenPriceDai) === 0) {
+    throw Error("[updateTradeInfoFromContractObject] No TradeInfo");
+  }
 
   tradeInfo.tokenId = tokendId;
   tradeInfo.tokenPriceDai = tokenPriceDai;

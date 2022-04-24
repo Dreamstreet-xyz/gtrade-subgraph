@@ -7,11 +7,17 @@ import {
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
   addOpenLimitOrder,
+  createTraderIfDne,
 } from "access/entity";
 import { getStorageContract } from "access/contract";
-import { TRADE_STATUS, TRADE_TYPE } from "constants/index";
+import {
+  OPEN_LIMIT_ORDER_TYPE_IX,
+  TRADE_STATUS,
+  TRADE_TYPE,
+} from "constants/index";
 import { OpenLimitPlaced } from "types/GNSTradingV6/GNSTradingV6";
 import { OpenLimitOrder, Trade } from "types/schema";
+import { getNftRewardsContract } from "access/contract/GNSNftRewardsV6";
 
 /**
  * Event is emitted when an open limit order is placed. Open limit order is placed
@@ -28,6 +34,8 @@ import { OpenLimitOrder, Trade } from "types/schema";
 export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   const { trader, pairIndex, index } = event.params;
 
+  createTraderIfDne(trader);
+
   // read storage contract state for trade details
   const storage = getStorageContract();
 
@@ -36,7 +44,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   const cOpenLimitOrderId = storage.openLimitOrderIds(trader, pairIndex, index);
 
   // get open limit order
-  const cOpenLimitOrder = storage.openLimitOrders(cOpenLimitOrderId);
+  const cOpenLimitOrder = storage.getOpenLimitOrder(trader, pairIndex, index);
 
   // construct OpenLimitOrder
   const openLimitOrderId = generateOrderId(
@@ -50,12 +58,16 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     false
   );
 
-  // TODO: update this to use contract value rather than tx input
-  const txInput = ethereum.decode(
-    "((address, uint256, uint256, uint256, uint256, uint256, bool, uint256, uint256, uint256),tuple, uint8, uint256, uint256, address)",
-    event.transaction.input
+  // const txInput = ethereum.decode(
+  //   "((address, uint256, uint256, uint256, uint256, uint256, bool, uint256, uint256, uint256),tuple, uint8, uint256, uint256, address)",
+  //   event.transaction.input
+  // );
+  const cType = getNftRewardsContract().openLimitOrderTypes(
+    trader,
+    pairIndex,
+    index
   );
-  openLimitOrder.type = txInput?.data.value10; // TODO: does this work?
+  openLimitOrder.type = OPEN_LIMIT_ORDER_TYPE_IX[cType];
 
   // construct Trade
   const tradeId = generateTradeId(event.transaction, event.logIndex, {

@@ -20,22 +20,21 @@ type OpenLimitOrder @entity {
   "Status of open limit order"
   status: OpenLimitOrderStatus
 
-  "Trade associated with order"
+  "Trade associated with open limit order"
   trade: Trade!
 
   "Spread reduction percentage"
   spreadReductionP: BigInt!
 
-  "Min price for LO execution"
+  "Min price for limit order execution"
   minPrice: BigInt!
 
-  "Max price for LO execution"
+  "Max price for limit order execution"
   maxPrice: BigInt!
 
-  "Block of LO execution"
+  "Block of limit order execution"
   block: BigInt!
 
-  "TODO"
   tokenId: Int
 
   "Executing order"

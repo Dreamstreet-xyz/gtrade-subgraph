@@ -36,4 +36,5 @@ export {
   updateTradeInfoFromContractObject,
 } from "./trade/TradeInfo";
 export { getNftHolderOrCreate, createNftHolderIfDne } from "./user/NftHolder";
+export { getTraderOrCreate, createTraderIfDne } from "./user/Trader";
 export { updateTradeAndTradeInfoToLatestFromTuple } from "./trade";

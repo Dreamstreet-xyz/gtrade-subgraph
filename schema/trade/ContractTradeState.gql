@@ -1,10 +1,5 @@
 type ContractTradeState @entity {
   id: ID!
-  # pendingMarketOrderIds: [String!]!
-  # pendingNftOrderIds: [String!]!
-  # openLimitOrders: [OpenLimitOrder!]!
-  # openTrades: [Trade!]!
-
   _pendingMarketOrdersLookup: String
   _pendingNftOrdersLookup: String
   _pendingSlUpdateOrdersLookup: String

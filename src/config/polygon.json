@@ -15,5 +15,9 @@
   "gnsPriceAggregatorV6": {
     "address": "0x16E4F4956f39dd37E170C9f7A4AFeCD4025F272a",
     "startBlock": 25940000
+  },
+  "gnsNftRewardsV6": {
+    "address": "0x3470756E5B490a974Bc25FeEeEb24c11102f5268",
+    "startBlock": 25940000
   }
 }

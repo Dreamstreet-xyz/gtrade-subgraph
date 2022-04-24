@@ -5,9 +5,15 @@ import {
   generateIdFromRawTradeTuple,
   addPendingMarketOrder,
   getOpenTradeId,
+  createTraderIfDne,
 } from "access/entity";
 import { getStorageContract } from "access/contract";
-import { TRADE_STATUS, TRADE_TYPE, PRICE_ORDER_STATUS } from "constants/index";
+import {
+  TRADE_STATUS,
+  TRADE_TYPE,
+  PRICE_ORDER_STATUS,
+  PRICE_ORDER_TYPE,
+} from "constants/index";
 import { MarketOrderInitiated } from "types/GNSTradingV6/GNSTradingV6";
 import { Trade, MarketOrder, TradeInfo } from "types/schema";
 
@@ -27,6 +33,8 @@ import { Trade, MarketOrder, TradeInfo } from "types/schema";
 export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   const { trader, pairIndex, open, orderId } = event.params;
 
+  createTraderIfDne(trader);
+
   // read storage contract state for trade details
   const storage = getStorageContract();
 
@@ -41,6 +49,14 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     cPendingMarketOrder.value5,
   ];
 
+  if (Number(_trade.leverage) === 0) {
+    log.error(
+      "[handleMarketOrderInitiated] No market order found in contract {}",
+      [orderId.toString()]
+    );
+    return;
+  }
+
   // construct MarketOrder object
   const marketOrderId = generateOrderId(
     event.transaction,
@@ -54,6 +70,9 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   marketOrder.slippageP = slippageP;
   marketOrder.spreadReductionP = spreadReductionP;
   marketOrder.tokenId = tokenId;
+  marketOrder.type = open
+    ? PRICE_ORDER_TYPE.MARKET_OPEN
+    : PRICE_ORDER_TYPE.MARKET_CLOSE;
 
   // read storage state
   let tradesState = getTradesState();
@@ -67,7 +86,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     );
     const trade = new Trade(tradeId);
     trade.status = TRADE_STATUS.OPENING;
-    trade.trader = trader.toString();
+    trade.trader = trader.toHexString();
     trade.type = TRADE_TYPE.MARKET_TRADE;
     trade.pairIndex = _trade.pairIndex;
     trade.index = _trade.index;

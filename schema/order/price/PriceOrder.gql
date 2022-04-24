@@ -14,7 +14,7 @@ enum PriceOrderType {
 }
 
 interface PriceOrder {
-  "Order ID -- generated on chain"
+  "Generated off-chain ID"
   id: ID!
 
   "Status of the order"
@@ -26,9 +26,8 @@ interface PriceOrder {
   "Trade of the order"
   trade: Trade!
 
-  "TODO"
   tokenId: Int
 
-  "Received price of Trade pairIndex"
+  "Received order price"
   price: BigInt
 }
