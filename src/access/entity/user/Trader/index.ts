@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { Trader } from "types/schema";
+import { Trader } from "../../../../types/schema";
 
 export function getTraderOrCreate(address: Address): Trader {
   return (

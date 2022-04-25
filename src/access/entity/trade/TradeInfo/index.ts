@@ -1,6 +1,6 @@
 import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
-import { GFarmTradingStorageV5__openTradesInfoResult } from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { TradeInfo } from "types/schema";
+import { GFarmTradingStorageV5__openTradesInfoResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { TradeInfo } from "../../../../types/schema";
 import { TradeTuple, generateIdFromTradeTuple } from "../Trade";
 /**
  * Generate a deterministic id for a given trade event
@@ -27,27 +27,18 @@ export function updateTradeInfoFromContractObject(
   cTradeInfo: GFarmTradingStorageV5__openTradesInfoResult,
   save: boolean
 ): TradeInfo {
-  const [
-    tokendId,
-    tokenPriceDai,
-    openInterestDai,
-    tpLastUpdated,
-    slLastUpdated,
-    beingMarketClosed,
-  ] = [
-    cTradeInfo.value0,
-    cTradeInfo.value1,
-    cTradeInfo.value2,
-    cTradeInfo.value3,
-    cTradeInfo.value4,
-    cTradeInfo.value5,
-  ];
+  const tokenId = cTradeInfo.value0;
+  const tokenPriceDai = cTradeInfo.value1;
+  const openInterestDai = cTradeInfo.value2;
+  const tpLastUpdated = cTradeInfo.value3;
+  const slLastUpdated = cTradeInfo.value4;
+  const beingMarketClosed = cTradeInfo.value5;
 
   if (Number(tokenPriceDai) === 0) {
     throw Error("[updateTradeInfoFromContractObject] No TradeInfo");
   }
 
-  tradeInfo.tokenId = tokendId;
+  tradeInfo.tokenId = tokenId;
   tradeInfo.tokenPriceDai = tokenPriceDai;
   tradeInfo.openInterestDai = openInterestDai;
   tradeInfo.tpLastUpdated = tpLastUpdated;

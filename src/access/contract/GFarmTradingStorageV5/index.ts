@@ -1,8 +1,6 @@
 import { Address, dataSource } from "@graphprotocol/graph-ts";
-import { GFarmTradingStorageV5 } from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { NETWORKS } from "constants/index";
-import mumbai from "config/mumbai.json";
-import polygon from "config/polygon.json";
+import { GFarmTradingStorageV5 } from "../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { NETWORKS, MUMBAI, POLYGON } from "../../../helpers/constants";
 
 /**
  * Returns a bound GFarmTradingStorageV5 instance to address based on network
@@ -11,7 +9,7 @@ import polygon from "config/polygon.json";
 export function getStorageContract(): GFarmTradingStorageV5 {
   const address =
     (dataSource.network() === NETWORKS.POLYGON &&
-      polygon.gfarmTradingStorageV5.address) ||
-    mumbai.gfarmTradingStorageV5.address;
+      POLYGON.gfarmTradingStorageV5) ||
+    MUMBAI.gfarmTradingStorageV5;
   return GFarmTradingStorageV5.bind(Address.fromString(address));
 }

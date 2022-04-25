@@ -1,6 +1,6 @@
 import { ethereum, log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
-import { getPriceAggregatorContract } from "access/contract/GNSPriceAggregatorV6";
+import { getStorageContract } from "../../../access/contract";
+import { getPriceAggregatorContract } from "../../../access/contract/GNSPriceAggregatorV6";
 import {
   generateOrderId,
   getTradesState,
@@ -9,16 +9,16 @@ import {
   addPendingNftOrder,
   createNftHolderIfDne,
   getOpenTradeId,
-} from "access/entity";
+} from "../../../access/entity";
 import {
   TRADE_STATUS,
   PRICE_ORDER_STATUS,
   LIMIT_ORDER_TYPE,
   LIMIT_ORDER_TYPE_IX,
   PRICE_ORDER_TYPE_IX,
-} from "constants/index";
-import { NftOrderInitiated } from "types/GNSTradingV6/GNSTradingV6";
-import { NftOrder, OpenLimitOrder, Trade } from "types/schema";
+} from "../../../helpers/constants";
+import { NftOrderInitiated } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { NftOrder, OpenLimitOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when a Limit Order is initiated. This can be during opening of a trade (in the case of an open limit order)
@@ -33,7 +33,11 @@ import { NftOrder, OpenLimitOrder, Trade } from "types/schema";
  * @param event OpenLimitPlaced event
  */
 export function handleNftOrderInitiated(event: NftOrderInitiated): void {
-  const { nftHolder, trader, pairIndex, orderId } = event.params;
+  const nftHolder = event.params.nftHolder;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const orderId = event.params.orderId;
+
   //   const txInput = ethereum.decode(
   //     "(uint8, address, uint256, uint256, uint256, uint256)",
   //     event.transaction.input
@@ -66,7 +70,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   const index = cPendingNftOrder.value4;
   const orderType = cPendingNftOrder.value5;
 
-  let tradeId;
+  let tradeId: string;
   if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
     // lookup OpenLimitOrder to get Trade obj for updating
     const openLimitOrderId = getOpenLimitOrderId(state, {

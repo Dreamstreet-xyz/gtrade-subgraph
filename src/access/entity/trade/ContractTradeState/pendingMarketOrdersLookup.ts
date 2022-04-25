@@ -1,4 +1,4 @@
-import { ContractTradeState, MarketOrder } from "types/schema";
+import { ContractTradeState, MarketOrder } from "../../../../types/schema";
 
 export function getPendingMarketOrderId(
   state: ContractTradeState,

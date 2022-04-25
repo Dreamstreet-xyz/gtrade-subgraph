@@ -1,4 +1,4 @@
-import { ContractTradeState, OpenLimitOrder } from "types/schema";
+import { ContractTradeState, OpenLimitOrder } from "../../../../types/schema";
 import { generateIdFromTradeTuple, TradeTuple } from "../Trade";
 
 export function getOpenLimitOrderId(

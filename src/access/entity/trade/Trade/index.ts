@@ -2,14 +2,18 @@ import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
 import {
   GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   GFarmTradingStorageV5__openTradesResult,
-} from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { Trade } from "types/schema";
+} from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { Trade } from "../../../../types/schema";
 
-export type TradeTuple = {
+export class TradeTuple {
   trader: Address;
   pairIndex: BigInt;
   index: BigInt;
-};
+}
+
+export function stringifyTuple(tuple: TradeTuple): string {
+  return `{trader: ${tuple.trader.toHexString()}, pairIndex: ${tuple.pairIndex.toString()}, index: ${tuple.index.toString()}}`;
+}
 
 /**
  * Generate a deterministic id for a given trade event
@@ -48,29 +52,16 @@ export function updateTradeFromContractObject(
   cTrade: GFarmTradingStorageV5__openTradesResult,
   save: boolean
 ): Trade {
-  const [
-    trader,
-    pairIndex,
-    index,
-    initialPosToken,
-    positionSizeDai,
-    openPrice,
-    buy,
-    leverage,
-    tp,
-    sl,
-  ] = [
-    cTrade.value0,
-    cTrade.value1,
-    cTrade.value2,
-    cTrade.value3,
-    cTrade.value4,
-    cTrade.value5,
-    cTrade.value6,
-    cTrade.value7,
-    cTrade.value8,
-    cTrade.value9,
-  ];
+  const trader = cTrade.value0;
+  const pairIndex = cTrade.value1;
+  const index = cTrade.value2;
+  const initialPosToken = cTrade.value3;
+  const positionSizeDai = cTrade.value4;
+  const openPrice = cTrade.value5;
+  const buy = cTrade.value6;
+  const leverage = cTrade.value7;
+  const tp = cTrade.value8;
+  const sl = cTrade.value9;
 
   if (Number(leverage) === 0) {
     throw Error("[updateTradeFromContractObject] No trade");

@@ -1,9 +1,12 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getTradesState, removePendingMarketOrder } from "access/entity";
-import { getPendingMarketOrderId } from "access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
-import { PRICE_ORDER_STATUS, TRADE_STATUS } from "constants/index";
-import { MarketOpenCanceled } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { MarketOrder, Trade } from "types/schema";
+import {
+  getTradesState,
+  removePendingMarketOrder,
+} from "../../../access/entity";
+import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
+import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
+import { MarketOpenCanceled } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import { MarketOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when a trade is canceled due to market order details.
@@ -16,7 +19,7 @@ import { MarketOrder, Trade } from "types/schema";
  * @param event MarketOpenCanceled event
  */
 export function handleMarketOpenCanceled(event: MarketOpenCanceled): void {
-  const { orderId } = event.params;
+  const orderId = event.params.orderId;
 
   let state = getTradesState();
 

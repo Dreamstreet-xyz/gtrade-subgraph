@@ -8,16 +8,16 @@ import {
   updateTradeFromOpenLimitOrderContractObject,
   addOpenLimitOrder,
   createTraderIfDne,
-} from "access/entity";
-import { getStorageContract } from "access/contract";
+} from "../../../access/entity";
+import { getStorageContract } from "../../../access/contract";
 import {
   OPEN_LIMIT_ORDER_TYPE_IX,
   TRADE_STATUS,
   TRADE_TYPE,
-} from "constants/index";
-import { OpenLimitPlaced } from "types/GNSTradingV6/GNSTradingV6";
-import { OpenLimitOrder, Trade } from "types/schema";
-import { getNftRewardsContract } from "access/contract/GNSNftRewardsV6";
+} from "../../../helpers/constants";
+import { OpenLimitPlaced } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { OpenLimitOrder, Trade } from "../../../types/schema";
+import { getNftRewardsContract } from "../../../access/contract/GNSNftRewardsV6";
 
 /**
  * Event is emitted when an open limit order is placed. Open limit order is placed
@@ -32,7 +32,9 @@ import { getNftRewardsContract } from "access/contract/GNSNftRewardsV6";
  * @param event OpenLimitPlaced event
  */
 export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
-  const { trader, pairIndex, index } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
   createTraderIfDne(trader);
 

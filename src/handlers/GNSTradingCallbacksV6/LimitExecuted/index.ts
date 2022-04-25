@@ -1,5 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { getStorageContract } from "../../../access/contract";
 import {
   addOpenTrade,
   addOpenTradeInfo,
@@ -11,34 +12,37 @@ import {
   removeOpenLimitOrder,
   updateTradeFromContractObject,
   updateTradeInfoFromContractObject,
-} from "access/entity";
+} from "../../../access/entity";
 import {
   removeOpenTrade,
   removeOpenTradeInfo,
-} from "access/entity/trade/ContractTradeState";
+} from "../../../access/entity/trade/ContractTradeState";
 import {
   LIMIT_ORDER_TYPE,
   LIMIT_ORDER_TYPE_IX,
   PRICE_ORDER_STATUS,
   TRADE_STATUS,
-} from "constants/index";
-import { LimitExecuted } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { NftOrder, OpenLimitOrder, Trade, TradeInfo } from "types/schema";
+} from "../../../helpers/constants";
+import { LimitExecuted } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import {
+  NftOrder,
+  OpenLimitOrder,
+  Trade,
+  TradeInfo,
+} from "../../../types/schema";
 
 export function handleLimitExecuted(event: LimitExecuted): void {
-  const {
-    orderId,
-    limitIndex,
-    t,
-    nftHolder,
-    orderType,
-    price,
-    positionSizeDai,
-    percentProfit,
-  } = event.params;
+  const orderId = event.params.orderId;
+  const limitIndex = event.params.limitIndex;
+  const t = event.params.t;
+  const nftHolder = event.params.nftHolder;
+  const orderType = event.params.orderType;
+  const price = event.params.price;
+  const positionSizeDai = event.params.positionSizeDai;
+  const percentProfit = event.params.percentProfit;
 
   const { trader, pairIndex, index } = t;
-  const tuple = { trader, pairIndex, index };
+  const tuple: TradeTuple = { trader, pairIndex, index };
 
   let state = getTradesState();
   const storage = getStorageContract();

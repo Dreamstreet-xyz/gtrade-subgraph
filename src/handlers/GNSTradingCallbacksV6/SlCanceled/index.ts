@@ -3,10 +3,10 @@ import {
   getPendingSlUpdateOrderId,
   getTradesState,
   removePendingSlUpdateOrder,
-} from "access/entity";
-import { PRICE_ORDER_STATUS } from "constants/index";
-import { SlCanceled } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { SlUpdateOrder } from "types/schema";
+} from "../../../access/entity";
+import { PRICE_ORDER_STATUS } from "../../../helpers/constants";
+import { SlCanceled } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import { SlUpdateOrder } from "../../../types/schema";
 
 /**
  * Event is emitted when a trade's stop loss update request is canceled.
@@ -19,7 +19,7 @@ import { SlUpdateOrder } from "types/schema";
  * @returns
  */
 export function handleSlCanceled(event: SlCanceled): void {
-  const { orderId, trader, pairIndex, index } = event.params;
+  const orderId = event.params.orderId;
 
   let state = getTradesState();
 

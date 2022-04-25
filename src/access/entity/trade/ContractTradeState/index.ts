@@ -1,8 +1,6 @@
-import { dataSource, log } from "@graphprotocol/graph-ts";
-import { NETWORKS } from "constants/index";
-import mumbai from "config/mumbai.json";
-import polygon from "config/polygon.json";
-import { ContractTradeState } from "types/schema";
+import { dataSource, log, json } from "@graphprotocol/graph-ts";
+import { NETWORKS, MUMBAI, POLYGON } from "../../../../helpers/constants";
+import { ContractTradeState } from "../../../../types/schema";
 
 /**
  * Returns a bound GFarmTradingStorageV5 instance to address based on network
@@ -11,8 +9,8 @@ import { ContractTradeState } from "types/schema";
 export function getTradesState(): ContractTradeState {
   const address =
     (dataSource.network() === NETWORKS.POLYGON &&
-      polygon.gfarmTradingStorageV5.address) ||
-    mumbai.gfarmTradingStorageV5.address;
+      POLYGON.gfarmTradingStorageV5) ||
+    MUMBAI.gfarmTradingStorageV5;
   let state = ContractTradeState.load(address);
   if (!state) {
     log.info(
@@ -20,10 +18,12 @@ export function getTradesState(): ContractTradeState {
       [address]
     );
     state = new ContractTradeState(address);
-    state._openTradesLookup = JSON.stringify({});
     state._openLimitOrdersLookup = JSON.stringify({});
-    state._pendingMarketOrdersLookup = JSON.stringify({});
+    state._openTradesLookup = JSON.stringify({});
     state._openTradesInfoLookup = JSON.stringify({});
+    state._pendingMarketOrdersLookup = JSON.stringify({});
+    state._pendingNftOrdersLookup = JSON.stringify({});
+    state._pendingSlUpdateOrdersLookup = JSON.stringify({});
     state.save();
   }
 

@@ -1,4 +1,4 @@
-import { ContractTradeState, NftOrder } from "types/schema";
+import { ContractTradeState, NftOrder } from "../../../../types/schema";
 
 export function getPendingNftOrderId(
   state: ContractTradeState,

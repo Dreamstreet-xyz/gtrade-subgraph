@@ -1,5 +1,5 @@
 import { log, BigInt } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { getStorageContract } from "../../../access/contract";
 import {
   getTradesState,
   removePendingMarketOrder,
@@ -8,15 +8,15 @@ import {
   updateTradeFromContractObject,
   addOpenTrade,
   addOpenTradeInfo,
-} from "access/entity";
+} from "../../../access/entity";
 import {
   removeOpenTrade,
   removeOpenTradeInfo,
-} from "access/entity/trade/ContractTradeState";
-import { getPendingMarketOrderId } from "access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
-import { PRICE_ORDER_STATUS, TRADE_STATUS } from "constants/index";
-import { MarketExecuted } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { MarketOrder, Trade, TradeInfo } from "types/schema";
+} from "../../../access/entity/trade/ContractTradeState";
+import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
+import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
+import { MarketExecuted } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import { MarketOrder, Trade, TradeInfo } from "../../../types/schema";
 
 /**
  * Event is emitted when a market order trade is opened or closed following price details.
@@ -30,14 +30,12 @@ import { MarketOrder, Trade, TradeInfo } from "types/schema";
  * @param event MarketExecuted event
  */
 export function handleMarketExecuted(event: MarketExecuted): void {
-  const {
-    orderId,
-    t,
-    open,
-    price,
-    positionSizeDai,
-    percentProfit,
-  } = event.params;
+  const orderId = event.params.orderId;
+  const t = event.params.t;
+  const open = event.params.open;
+  const price = event.params.price;
+  const positionSizeDai = event.params.positionSizeDai;
+  const percentProfit = event.params.percentProfit;
 
   const { trader, pairIndex, index } = t;
 

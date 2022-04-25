@@ -1,5 +1,5 @@
 import { Address } from "@graphprotocol/graph-ts";
-import { NftHolder } from "types/schema";
+import { NftHolder } from "../../../../types/schema";
 
 export function getNftHolderOrCreate(address: Address): NftHolder {
   return (

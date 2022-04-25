@@ -1,23 +1,32 @@
 import { log } from "@graphprotocol/graph-ts";
-import { GFarmTradingStorageV5 } from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { ContractTradeState, Trade, TradeInfo } from "types/schema";
+import { GFarmTradingStorageV5 } from "../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { ContractTradeState, Trade, TradeInfo } from "../../../types/schema";
 import { getOpenTradeId, getOpenTradeInfoId } from "./ContractTradeState";
-import { TradeTuple, updateTradeFromContractObject } from "./Trade";
+import {
+  TradeTuple,
+  updateTradeFromContractObject,
+  stringifyTuple,
+} from "./Trade";
 import { updateTradeInfoFromContractObject } from "./TradeInfo";
+
+export class TradeAndTradeInfo {
+  trade: Trade;
+  tradeInfo: TradeInfo;
+}
 
 export function updateTradeAndTradeInfoToLatestFromTuple(
   state: ContractTradeState,
   storage: GFarmTradingStorageV5,
   tuple: TradeTuple,
   save: boolean
-): [Trade, TradeInfo] {
+): TradeAndTradeInfo {
   // update Trade obj from contract
   const tradeId = getOpenTradeId(state, tuple);
   let trade = Trade.load(tradeId);
   if (!trade) {
     log.error(
       "[updateTradeAndTradeInfoToLatestFromTuple] Trade {} not found for tuple {}",
-      [tradeId, JSON.stringify(tuple)]
+      [tradeId, stringifyTuple(tuple)]
     );
     throw Error("[updateTradeAndTradeInfoToLatestFromTuple] Trade not found");
   }
@@ -30,7 +39,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
   if (!tradeInfo) {
     log.error(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo {} not found for tuple {}",
-      [tradeInfoId, JSON.stringify(tuple)]
+      [tradeInfoId, stringifyTuple(tuple)]
     );
     throw Error(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo not found"
@@ -48,5 +57,5 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
     trade.save();
     tradeInfo.save();
   }
-  return [trade, tradeInfo];
+  return { trade, tradeInfo };
 }

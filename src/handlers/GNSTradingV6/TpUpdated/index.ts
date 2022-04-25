@@ -1,10 +1,11 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { getStorageContract } from "../../../access/contract";
 import {
   getTradesState,
   updateTradeAndTradeInfoToLatestFromTuple,
-} from "access/entity";
-import { TpUpdated } from "types/GNSTradingV6/GNSTradingV6";
+} from "../../../access/entity";
+import { TpUpdated } from "../../../types/GNSTradingV6/GNSTradingV6";
 
 /**
  * Event is emitted when a trade's take profit is updated.
@@ -16,9 +17,11 @@ import { TpUpdated } from "types/GNSTradingV6/GNSTradingV6";
  * @param event TpUpdated
  */
 export function handleTpUpdated(event: TpUpdated): void {
-  const { trader, pairIndex, index, newTp } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
-  const tuple = { trader, pairIndex, index };
+  const tuple: TradeTuple = { trader, pairIndex, index };
 
   const storage = getStorageContract();
   const state = getTradesState();

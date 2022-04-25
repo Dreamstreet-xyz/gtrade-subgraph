@@ -3,10 +3,10 @@ import {
   getPendingMarketOrderId,
   getTradesState,
   removePendingMarketOrder,
-} from "access/entity";
-import { PRICE_ORDER_STATUS, TRADE_STATUS } from "constants/index";
-import { ChainlinkCallbackTimeout } from "types/GNSTradingV6/GNSTradingV6";
-import { MarketOrder, Trade } from "types/schema";
+} from "../../../access/entity";
+import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
+import { ChainlinkCallbackTimeout } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { MarketOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when a market order times out. If on trade open, it is canceled. If on trade close, it is closed.
@@ -21,7 +21,7 @@ import { MarketOrder, Trade } from "types/schema";
 export function handleChainlinkCallbackTimeout(
   event: ChainlinkCallbackTimeout
 ): void {
-  const { orderId, order } = event.params;
+  const orderId = event.params.orderId;
 
   // read orderId from state
   let state = getTradesState();

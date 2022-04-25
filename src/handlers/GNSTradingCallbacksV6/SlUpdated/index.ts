@@ -1,14 +1,15 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { getStorageContract } from "../../../access/contract";
 import {
   getPendingSlUpdateOrderId,
   getTradesState,
   removePendingSlUpdateOrder,
   updateTradeAndTradeInfoToLatestFromTuple,
-} from "access/entity";
-import { PRICE_ORDER_STATUS } from "constants/index";
-import { SlUpdated } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { SlUpdateOrder } from "types/schema";
+} from "../../../access/entity";
+import { PRICE_ORDER_STATUS } from "../../../helpers/constants";
+import { SlUpdated } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import { SlUpdateOrder } from "../../../types/schema";
 
 /**
  * Event is emitted when a trade's stop loss update request is fulfilled and the stop loss is updated.
@@ -23,9 +24,13 @@ import { SlUpdateOrder } from "types/schema";
  * @param event SlUpdated
  */
 export function handleSlUpdated(event: SlUpdated): void {
-  const { orderId, trader, pairIndex, index, newSl } = event.params;
+  const orderId = event.params.orderId;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
+  const newSl = event.params.newSl;
 
-  const tuple = { trader, pairIndex, index };
+  const tuple: TradeTuple = { trader, pairIndex, index };
 
   let state = getTradesState();
   const storage = getStorageContract();

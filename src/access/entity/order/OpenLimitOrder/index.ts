@@ -1,6 +1,6 @@
-import { ZERO_ADDRESS } from "constants/index";
-import { GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct } from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { OpenLimitOrder } from "types/schema";
+import { ZERO_ADDRESS } from "../../../../helpers/constants";
+import { GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { OpenLimitOrder } from "../../../../types/schema";
 
 export function updateOpenLimitOrderFromContractObject(
   openLimitOrder: OpenLimitOrder,

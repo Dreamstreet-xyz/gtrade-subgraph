@@ -1,4 +1,4 @@
-import { ContractTradeState, SlUpdateOrder } from "types/schema";
+import { ContractTradeState, SlUpdateOrder } from "../../../../types/schema";
 
 export function getPendingSlUpdateOrderId(
   state: ContractTradeState,

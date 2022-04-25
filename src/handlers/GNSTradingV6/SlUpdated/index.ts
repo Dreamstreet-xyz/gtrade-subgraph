@@ -1,10 +1,11 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { getStorageContract } from "../../../access/contract";
 import {
   getTradesState,
   updateTradeAndTradeInfoToLatestFromTuple,
-} from "access/entity";
-import { SlUpdated } from "types/GNSTradingV6/GNSTradingV6";
+} from "../../../access/entity";
+import { SlUpdated } from "../../../types/GNSTradingV6/GNSTradingV6";
 
 /**
  * Event is emitted when a trade's stop loss is requested to be updated, and due to guaranteed SL rules on asset,
@@ -19,9 +20,11 @@ import { SlUpdated } from "types/GNSTradingV6/GNSTradingV6";
  * @param event SlUpdated
  */
 export function handleSlUpdated(event: SlUpdated): void {
-  const { trader, pairIndex, index, newSl } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
-  const tuple = { trader, pairIndex, index };
+  const tuple: TradeTuple = { trader, pairIndex, index };
 
   const storage = getStorageContract();
   const state = getTradesState();

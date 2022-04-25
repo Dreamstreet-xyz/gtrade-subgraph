@@ -7,3 +7,8 @@ type ContractTradeState @entity {
   _openTradesLookup: String
   _openTradesInfoLookup: String
 }
+
+type ContractIdMapping @entity {
+  id: ID!
+  entityId: String
+}

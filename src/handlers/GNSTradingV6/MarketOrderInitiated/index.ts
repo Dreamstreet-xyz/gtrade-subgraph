@@ -6,16 +6,16 @@ import {
   addPendingMarketOrder,
   getOpenTradeId,
   createTraderIfDne,
-} from "access/entity";
-import { getStorageContract } from "access/contract";
+} from "../../../access/entity";
+import { getStorageContract } from "../../../access/contract";
 import {
   TRADE_STATUS,
   TRADE_TYPE,
   PRICE_ORDER_STATUS,
   PRICE_ORDER_TYPE,
-} from "constants/index";
-import { MarketOrderInitiated } from "types/GNSTradingV6/GNSTradingV6";
-import { Trade, MarketOrder, TradeInfo } from "types/schema";
+} from "../../../helpers/constants";
+import { MarketOrderInitiated } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { Trade, MarketOrder, TradeInfo } from "../../../types/schema";
 
 /**
  * Event is emitted when a market order is initiated. Market order is a price order that can be placed
@@ -31,7 +31,10 @@ import { Trade, MarketOrder, TradeInfo } from "types/schema";
  * @param event MarketOrderInitiated event
  */
 export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
-  const { trader, pairIndex, open, orderId } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const open = event.params.open;
+  const orderId = event.params.orderId;
 
   createTraderIfDne(trader);
 
@@ -40,14 +43,12 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
 
   // read pending market order from storage
   const cPendingMarketOrder = storage.reqID_pendingMarketOrder(orderId);
-  const [_trade, block, wantedPrice, slippageP, spreadReductionP, tokenId] = [
-    cPendingMarketOrder.value0,
-    cPendingMarketOrder.value1,
-    cPendingMarketOrder.value2,
-    cPendingMarketOrder.value3,
-    cPendingMarketOrder.value4,
-    cPendingMarketOrder.value5,
-  ];
+  const _trade = cPendingMarketOrder.value0;
+  const block = cPendingMarketOrder.value1;
+  const wantedPrice = cPendingMarketOrder.value2;
+  const slippageP = cPendingMarketOrder.value3;
+  const spreadReductionP = cPendingMarketOrder.value4;
+  const tokenId = cPendingMarketOrder.value5;
 
   if (Number(_trade.leverage) === 0) {
     log.error(

@@ -1,4 +1,4 @@
-import { ContractTradeState } from "types/schema";
+import { ContractTradeState } from "../../../../types/schema";
 import { generateIdFromTradeTuple, TradeTuple } from "../Trade";
 
 export function getOpenTradeInfoId(

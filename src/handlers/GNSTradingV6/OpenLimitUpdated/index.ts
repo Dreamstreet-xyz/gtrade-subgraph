@@ -1,13 +1,13 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { getStorageContract } from "../../../access/contract";
 import {
   getOpenLimitOrderId,
   getTradesState,
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
-} from "access/entity";
-import { OpenLimitUpdated } from "types/GNSTradingV6/GNSTradingV6";
-import { OpenLimitOrder, Trade } from "types/schema";
+} from "../../../access/entity";
+import { OpenLimitUpdated } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { OpenLimitOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when an open limit order is updated.
@@ -21,7 +21,9 @@ import { OpenLimitOrder, Trade } from "types/schema";
  * @returns
  */
 export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
-  const { trader, pairIndex, index, newPrice, newTp, newSl } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
   const state = getTradesState();
   const storage = getStorageContract();

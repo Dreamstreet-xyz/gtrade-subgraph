@@ -1,22 +1,22 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { getStorageContract } from "../../../access/contract";
 import {
   getPendingMarketOrderId,
   getTradesState,
   updateTradeFromContractObject,
   removePendingMarketOrder,
-} from "access/entity";
+} from "../../../access/entity";
 import {
   removeOpenTrade,
   removeOpenTradeInfo,
-} from "access/entity/trade/ContractTradeState";
+} from "../../../access/entity/trade/ContractTradeState";
 import {
   PRICE_ORDER_STATUS,
   TRADE_STATUS,
   ZERO_ADDRESS,
-} from "constants/index";
-import { MarketCloseCanceled } from "types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
-import { MarketOrder, Trade } from "types/schema";
+} from "../../../helpers/constants";
+import { MarketCloseCanceled } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
+import { MarketOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when a market close order is canceled due to order details. This will keep
@@ -32,7 +32,10 @@ import { MarketOrder, Trade } from "types/schema";
  * @returns
  */
 export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
-  const { orderId, trader, pairIndex, index } = event.params;
+  const orderId = event.params.orderId;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
   let state = getTradesState();
   const contract = getStorageContract();

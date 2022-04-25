@@ -1,13 +1,16 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
+import { getStorageContract } from "../../../access/contract";
 import {
   getOpenLimitOrderId,
   getTradesState,
   removeOpenLimitOrder,
-} from "access/entity";
-import { OpenLimitCanceled } from "types/GNSTradingV6/GNSTradingV6";
-import { OpenLimitOrder, Trade } from "types/schema";
-import { OPEN_LIMIT_ORDER_STATUS, TRADE_STATUS } from "constants/index";
+} from "../../../access/entity";
+import { OpenLimitCanceled } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { OpenLimitOrder, Trade } from "../../../types/schema";
+import {
+  OPEN_LIMIT_ORDER_STATUS,
+  TRADE_STATUS,
+} from "../../../helpers/constants";
 
 /**
  * Event is emitted when an open limit order is canceled before it's been fulfilled.
@@ -20,7 +23,9 @@ import { OPEN_LIMIT_ORDER_STATUS, TRADE_STATUS } from "constants/index";
  * @param event OpenLimitCanceled
  */
 export function handleOpenLimitCanceled(event: OpenLimitCanceled): void {
-  const { trader, pairIndex, index } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
 
   let state = getTradesState();
   const storage = getStorageContract();

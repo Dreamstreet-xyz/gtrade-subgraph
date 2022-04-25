@@ -1,20 +1,21 @@
-import { LIMIT_ORDER_TYPE_IX, ZERO_ADDRESS } from "constants/index";
-import { GFarmTradingStorageV5__reqID_pendingNftOrderResult } from "types/GNSTradingV6/GFarmTradingStorageV5";
-import { NftOrder } from "types/schema";
+import {
+  LIMIT_ORDER_TYPE_IX,
+  ZERO_ADDRESS,
+} from "../../../../helpers/constants";
+import { GFarmTradingStorageV5__reqID_pendingNftOrderResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
+import { NftOrder } from "../../../../types/schema";
 
 export function updateNftOrderFromContractObject(
   nftOrder: NftOrder,
   cNftOrder: GFarmTradingStorageV5__reqID_pendingNftOrderResult,
   save: boolean
 ): NftOrder {
-  const [nftHolder, nftId, trader, pairIndex, index, orderType] = [
-    cNftOrder.value0,
-    cNftOrder.value1,
-    cNftOrder.value2,
-    cNftOrder.value3,
-    cNftOrder.value4,
-    cNftOrder.value5,
-  ];
+  const nftHolder = cNftOrder.value0;
+  const nftId = cNftOrder.value1;
+  const trader = cNftOrder.value2;
+  const pairIndex = cNftOrder.value3;
+  const index = cNftOrder.value4;
+  const orderType = cNftOrder.value5;
 
   if (trader.toHexString() === ZERO_ADDRESS) {
     throw Error("[updateNftOrderFromContractObject] No cNftOrder");

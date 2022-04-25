@@ -1,16 +1,20 @@
 import { log } from "@graphprotocol/graph-ts";
-import { getStorageContract } from "access/contract";
-import { getPriceAggregatorContract } from "access/contract/GNSPriceAggregatorV6";
+import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { getStorageContract } from "../../../access/contract";
+import { getPriceAggregatorContract } from "../../../access/contract/GNSPriceAggregatorV6";
 import {
   addPendingSlUpdateOrder,
   generateOrderId,
   getOpenTradeId,
   getTradesState,
   updateTradeFromContractObject,
-} from "access/entity";
-import { PRICE_ORDER_STATUS, PRICE_ORDER_TYPE } from "constants/index";
-import { SlUpdateInitiated } from "types/GNSTradingV6/GNSTradingV6";
-import { SlUpdateOrder, Trade } from "types/schema";
+} from "../../../access/entity";
+import {
+  PRICE_ORDER_STATUS,
+  PRICE_ORDER_TYPE,
+} from "../../../helpers/constants";
+import { SlUpdateInitiated } from "../../../types/GNSTradingV6/GNSTradingV6";
+import { SlUpdateOrder, Trade } from "../../../types/schema";
 
 /**
  * Event is emitted when a trade's stop loss is requested to be updated, but because no guaranteed SL
@@ -25,9 +29,13 @@ import { SlUpdateOrder, Trade } from "types/schema";
  * @returns
  */
 export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
-  const { trader, pairIndex, index, newSl, orderId } = event.params;
+  const trader = event.params.trader;
+  const pairIndex = event.params.pairIndex;
+  const index = event.params.index;
+  const newSl = event.params.newSl;
+  const orderId = event.params.orderId;
 
-  const tuple = { trader, pairIndex, index };
+  const tuple: TradeTuple = { trader, pairIndex, index };
 
   const aggregator = getPriceAggregatorContract();
   const storage = getStorageContract();
