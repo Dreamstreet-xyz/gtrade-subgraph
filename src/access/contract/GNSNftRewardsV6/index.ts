@@ -8,7 +8,7 @@ import { GNSNftRewardsV6 } from "../../../types/GNSTradingV6/GNSNftRewardsV6";
  */
 export function getNftRewardsContract(): GNSNftRewardsV6 {
   const address =
-    dataSource.network() === NETWORKS.POLYGON
+    dataSource.network() == NETWORKS.POLYGON
       ? POLYGON.gnsNftRewardsV6
       : MUMBAI.gnsNftRewardsV6;
   return GNSNftRewardsV6.bind(Address.fromString(address));

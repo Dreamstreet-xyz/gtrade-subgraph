@@ -49,7 +49,7 @@ export function handleChainlinkCallbackTimeout(
   }
 
   // on open -> OPEN_TIMED_OUT
-  if (trade.status !== TRADE_STATUS.CLOSING) {
+  if (trade.status != TRADE_STATUS.CLOSING) {
     trade.status = TRADE_STATUS.OPEN_TIMED_OUT;
   } else {
     // on close -> CLOSE_TIMED_OUT

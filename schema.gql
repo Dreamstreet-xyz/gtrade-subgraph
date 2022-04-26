@@ -1,15 +1,7 @@
-type ContractTradeState @entity {
-  id: ID!
-  _pendingMarketOrdersLookup: String
-  _pendingNftOrdersLookup: String
-  _pendingSlUpdateOrdersLookup: String
-  _openLimitOrdersLookup: String
-  _openTradesLookup: String
-  _openTradesInfoLookup: String
-}
-
 type ContractIdMapping @entity {
+  "Contract identifiable ID"
   id: ID!
+  "Associated entity ID"
   entityId: String!
 }
 

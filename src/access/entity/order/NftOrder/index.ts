@@ -17,7 +17,7 @@ export function updateNftOrderFromContractObject(
   const index = cNftOrder.value4.toI32();
   const orderType = cNftOrder.value5;
 
-  if (trader.toHexString() === ZERO_ADDRESS) {
+  if (trader.toHexString() == ZERO_ADDRESS) {
     throw Error("[updateNftOrderFromContractObject] No cNftOrder");
   }
 

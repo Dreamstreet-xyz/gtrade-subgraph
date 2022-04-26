@@ -1,9 +1,5 @@
-import { dataSource, log, json, store } from "@graphprotocol/graph-ts";
-import { NETWORKS, MUMBAI, POLYGON } from "../../../../helpers/constants";
-import {
-  ContractIdMapping,
-  ContractTradeState,
-} from "../../../../types/schema";
+import { log, store } from "@graphprotocol/graph-ts";
+import { ContractIdMapping } from "../../../../types/schema";
 
 export function getEntityIdFromContractId(id: string): string {
   log.debug("[getEntityIdFromContractId] {}", [id]);

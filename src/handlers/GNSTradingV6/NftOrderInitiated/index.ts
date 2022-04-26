@@ -86,7 +86,11 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   const orderType = cPendingNftOrder.value5;
 
   let tradeId: string;
-  if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
+  log.info("[handleNftOrderInitiated] OrderType {}, {}", [
+    orderType.toString(),
+    LIMIT_ORDER_TYPE_IX[orderType],
+  ]);
+  if (LIMIT_ORDER_TYPE_IX[orderType] == LIMIT_ORDER_TYPE.OPEN) {
     // lookup OpenLimitOrder to get Trade obj for updating
     const openLimitOrderId = getOpenLimitOrderId({
       trader,
@@ -128,7 +132,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     return;
   }
   trade.status =
-    LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN
+    LIMIT_ORDER_TYPE_IX[orderType] == LIMIT_ORDER_TYPE.OPEN
       ? TRADE_STATUS.OPENING
       : TRADE_STATUS.CLOSING;
   log.info("[handleNftOrderInitiated] Trade updated {}", [tradeId]);

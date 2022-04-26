@@ -1,0 +1,7 @@
+type ContractIdMapping @entity {
+  "Contract identifiable ID"
+  id: ID!
+
+  "Associated entity ID"
+  entityId: String!
+}

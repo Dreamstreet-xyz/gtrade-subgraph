@@ -44,6 +44,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   const pairIndex = t.pairIndex;
   const index = t.index;
 
+  const openLimitTuple: TradeTuple = { trader, pairIndex, index: limitIndex };
   const tuple: TradeTuple = { trader, pairIndex, index };
 
   log.info("[handleLimitExecuted] OrderId {}, Trader {}", [
@@ -69,19 +70,19 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   log.info("[handleLimitExecuted] Updated NftOrder {}", [nftOrderId]);
 
   // opening trade
-  if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
+  if (LIMIT_ORDER_TYPE_IX[orderType] == LIMIT_ORDER_TYPE.OPEN) {
     log.info(
       "[handleLimitExecuted] OpenLimitOrder was executed, finding for tuple {}, {}, {}",
       [trader.toHexString(), pairIndex.toString(), index.toString()]
     );
     // update OpenLimitOrder
     // assign NftOrder to OpenLimitOrder
-    const openLimitOrderId = getOpenLimitOrderId(tuple);
+    const openLimitOrderId = getOpenLimitOrderId(openLimitTuple);
     const openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
     if (!openLimitOrder) {
       log.error(
         "[handleLimitExecuted] OpenLimitOrder {} not found for tuple {}",
-        [openLimitOrderId, stringifyTuple(tuple)]
+        [openLimitOrderId, stringifyTuple(openLimitTuple)]
       );
       return;
     }
@@ -91,7 +92,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     ]);
 
     // sanity check Trade references
-    if (nftOrder.trade !== openLimitOrder.trade) {
+    if (nftOrder.trade != openLimitOrder.trade) {
       log.error(
         "[handleLimitExecuted] Mismatch between NftOrder and OpenLimitOrder trade references, {}/{} | {}/{}",
         [nftOrder.trade, openLimitOrder.trade, nftOrder.id, openLimitOrder.id]
@@ -140,7 +141,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     addOpenTrade(tuple, trade.id, true);
     addOpenTradeInfo(tuple, tradeInfo.id, true);
 
-    removeOpenLimitOrder(tuple);
+    removeOpenLimitOrder(openLimitTuple);
 
     // save
     trade.save();

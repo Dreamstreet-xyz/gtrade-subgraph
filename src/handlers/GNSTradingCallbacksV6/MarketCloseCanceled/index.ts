@@ -76,7 +76,7 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   // if the trade position size was smaller than the feed owed for price order,
   // then it is automatically closed, otherwise it's still open
   const cTrade = contract.openTrades(trader, pairIndex, index);
-  if (cTrade && cTrade.value0.toHexString() !== ZERO_ADDRESS) {
+  if (cTrade && cTrade.value0.toHexString() != ZERO_ADDRESS) {
     log.info("[handleMarketCloseCanceled] Trade is still open", []);
     // update whole object from contract
     trade = updateTradeFromContractObject(trade, cTrade, false);
@@ -90,7 +90,7 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   log.info("[handleMarketCloseCanceled] Updated Trade {}", [trade.id]);
 
   // update state
-  if (!cTrade || cTrade.value0.toHexString() === ZERO_ADDRESS) {
+  if (!cTrade || cTrade.value0.toHexString() == ZERO_ADDRESS) {
     removeOpenTrade({ trader, pairIndex, index });
     removeOpenTradeInfo({ trader, pairIndex, index });
   }

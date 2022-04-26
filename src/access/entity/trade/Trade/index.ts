@@ -63,7 +63,7 @@ export function updateTradeFromContractObject(
   const tp = cTrade.value8;
   const sl = cTrade.value9;
 
-  if (leverage.toI32() === 0) {
+  if (leverage.toI32() == 0) {
     throw Error("[updateTradeFromContractObject] No trade");
   }
 

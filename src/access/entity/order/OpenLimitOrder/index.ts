@@ -7,7 +7,7 @@ export function updateOpenLimitOrderFromContractObject(
   cOpenLimitOrder: GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   save: boolean
 ): OpenLimitOrder {
-  if (cOpenLimitOrder.trader.toHexString() === ZERO_ADDRESS) {
+  if (cOpenLimitOrder.trader.toHexString() == ZERO_ADDRESS) {
     throw Error("[updateOpenLimitOrderFromContractObject] No cOpenLimitOrder");
   }
 

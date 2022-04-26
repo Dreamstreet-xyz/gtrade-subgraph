@@ -59,10 +59,10 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     []
   );
 
-  if (_trade.leverage.toI32() === 0) {
+  if (_trade.leverage.toI32() == 0) {
     log.error(
-      "[handleMarketOrderInitiated] No market order found in contract {}",
-      [orderId.toString()]
+      "[handleMarketOrderInitiated] No market order found in contract orderId: {}, trade leverage: {}",
+      [orderId.toString(), _trade.leverage.toString()]
     );
     return;
   }
