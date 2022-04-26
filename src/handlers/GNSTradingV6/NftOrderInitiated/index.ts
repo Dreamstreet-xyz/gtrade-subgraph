@@ -1,4 +1,4 @@
-import { ethereum, log } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 import { stringifyTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import { getPriceAggregatorContract } from "../../../access/contract/GNSPriceAggregatorV6";
@@ -16,6 +16,7 @@ import {
   LIMIT_ORDER_TYPE,
   LIMIT_ORDER_TYPE_IX,
   PRICE_ORDER_TYPE_IX,
+  OPEN_LIMIT_ORDER_STATUS,
 } from "../../../helpers/constants";
 import { NftOrderInitiated } from "../../../types/GNSTradingV6/GNSTradingV6";
 import { NftOrder, OpenLimitOrder, Trade } from "../../../types/schema";
@@ -105,10 +106,13 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
       );
       return;
     }
+    openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.FULFILLING;
+
     tradeId = openLimitOrder.trade;
     log.info("[handleNftOrderInitiated] OpenLimitOrder found {}", [
       openLimitOrderId,
     ]);
+    openLimitOrder.save();
   } else {
     // lookup open trade to get Trade obj for updating
     tradeId = getOpenTradeId({ trader, pairIndex, index });

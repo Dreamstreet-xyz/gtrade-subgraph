@@ -15,14 +15,14 @@ export const CLOSE_TIMED_OUT = "CLOSE_TIMED_OUT";
 export const CLOSED = "CLOSED";
 
 class TradeStatus {
-  OPENING: string;
-  LIMIT_ORDER_PENDING: string;
-  OPEN: string;
-  CANCELED: string;
-  OPEN_TIMED_OUT: string;
-  CLOSING: string;
-  CLOSE_TIMED_OUT: string;
-  CLOSED: string;
+  OPENING!: string;
+  LIMIT_ORDER_PENDING!: string;
+  OPEN!: string;
+  CANCELED!: string;
+  OPEN_TIMED_OUT!: string;
+  CLOSING!: string;
+  CLOSE_TIMED_OUT!: string;
+  CLOSED!: string;
 }
 
 export const TRADE_STATUS: TradeStatus = {
@@ -42,8 +42,8 @@ export const MARKET_TRADE = "MARKET";
 export const LIMIT_ORDER_TRADE = "LIMIT_ORDER";
 
 class TradeType {
-  MARKET_TRADE: string;
-  LIMIT_ORDER_TRADE: string;
+  MARKET_TRADE!: string;
+  LIMIT_ORDER_TRADE!: string;
 }
 
 export const TRADE_TYPE: TradeType = {
@@ -57,10 +57,10 @@ export const TIMED_OUT = "TIMED_OUT";
 export const RECEIVED = "RECEIVED";
 
 class PriceOrderStatus {
-  NONE: string;
-  REQUESTED: string;
-  TIMED_OUT: string;
-  RECEIVED: string;
+  NONE!: string;
+  REQUESTED!: string;
+  TIMED_OUT!: string;
+  RECEIVED!: string;
 }
 
 export const PRICE_ORDER_STATUS: PriceOrderStatus = {
@@ -71,8 +71,8 @@ export const PRICE_ORDER_STATUS: PriceOrderStatus = {
 };
 
 class Networks {
-  POLYGON: string;
-  MUMBAI: string;
+  POLYGON!: string;
+  MUMBAI!: string;
 }
 
 export const NETWORKS: Networks = {
@@ -81,10 +81,10 @@ export const NETWORKS: Networks = {
 };
 
 class LimitOrderType {
-  TP: string;
-  SL: string;
-  LIQ: string;
-  OPEN: string;
+  TP!: string;
+  SL!: string;
+  LIQ!: string;
+  OPEN!: string;
 }
 
 export const LIMIT_ORDER_TYPE: LimitOrderType = {
@@ -102,23 +102,25 @@ export const LIMIT_ORDER_TYPE_IX = [
 ];
 
 class OpenLimitOrderStatus {
-  OPEN: string;
-  CANCELED: string;
-  FULFILLED: string;
+  OPEN!: string;
+  CANCELED!: string;
+  FULFILLING!: string;
+  FULFILLED!: string;
 }
 
 export const OPEN_LIMIT_ORDER_STATUS: OpenLimitOrderStatus = {
   OPEN: "OPEN",
   CANCELED: "CANCELED",
+  FULFILLING: "FULFILLING",
   FULFILLED: "FULFILLED",
 };
 
 class PriceOrderType {
-  MARKET_OPEN: string;
-  MARKET_CLOSE: string;
-  LIMIT_OPEN: string;
-  LIMIT_CLOSE: string;
-  UPDATE_SL: string;
+  MARKET_OPEN!: string;
+  MARKET_CLOSE!: string;
+  LIMIT_OPEN!: string;
+  LIMIT_CLOSE!: string;
+  UPDATE_SL!: string;
 }
 
 export const PRICE_ORDER_TYPE: PriceOrderType = {
@@ -138,9 +140,9 @@ export const PRICE_ORDER_TYPE_IX = [
 ];
 
 class OpenLimitOrderType {
-  LEGACY: string;
-  REVERSAL: string;
-  MOMENTUM: string;
+  LEGACY!: string;
+  REVERSAL!: string;
+  MOMENTUM!: string;
 }
 
 export const OPEN_LIMIT_ORDER_TYPE: OpenLimitOrderType = {
@@ -158,11 +160,11 @@ export const OPEN_LIMIT_ORDER_TYPE_IX = [
 // duplicates of ../config
 
 class NetworkAddresses {
-  gnsTradingV6: string;
-  gnsTradingCallbacksV6: string;
-  gfarmTradingStorageV5: string;
-  gnsPriceAggregatorV6: string;
-  gnsNftRewardsV6: string;
+  gnsTradingV6!: string;
+  gnsTradingCallbacksV6!: string;
+  gfarmTradingStorageV5!: string;
+  gnsPriceAggregatorV6!: string;
+  gnsNftRewardsV6!: string;
 }
 
 export const MUMBAI: NetworkAddresses = {

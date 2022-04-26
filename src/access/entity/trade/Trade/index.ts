@@ -7,9 +7,9 @@ import {
 import { Trade } from "../../../../types/schema";
 
 export class TradeTuple {
-  trader: Address;
-  pairIndex: BigInt;
-  index: BigInt;
+  trader!: Address;
+  pairIndex!: BigInt;
+  index!: BigInt;
 }
 
 export function stringifyTuple(tuple: TradeTuple): string {

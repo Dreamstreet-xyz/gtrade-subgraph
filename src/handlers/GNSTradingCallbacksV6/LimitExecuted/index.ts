@@ -19,6 +19,7 @@ import {
 import {
   LIMIT_ORDER_TYPE,
   LIMIT_ORDER_TYPE_IX,
+  OPEN_LIMIT_ORDER_STATUS,
   PRICE_ORDER_STATUS,
   TRADE_STATUS,
 } from "../../../helpers/constants";
@@ -88,6 +89,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       return;
     }
     openLimitOrder.nftOrder = nftOrderId;
+    openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.FULFILLED;
     log.info("[handleLimitExecuted] Updated OpenLimitOrder {}", [
       openLimitOrderId,
     ]);
@@ -147,6 +149,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     // save
     trade.save();
     tradeInfo.save();
+    openLimitOrder.save();
   } else {
     log.info("[handleLimitExecuted] Trade {} was closed, updating", [
       nftOrder.trade,

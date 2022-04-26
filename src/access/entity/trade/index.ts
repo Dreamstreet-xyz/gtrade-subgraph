@@ -10,8 +10,8 @@ import {
 import { updateTradeInfoFromContractObject } from "./TradeInfo";
 
 export class TradeAndTradeInfo {
-  trade: Trade;
-  tradeInfo: TradeInfo;
+  trade!: Trade;
+  tradeInfo!: TradeInfo;
 }
 
 export function updateTradeAndTradeInfoToLatestFromTuple(

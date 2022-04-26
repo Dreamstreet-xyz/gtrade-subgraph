@@ -1,8 +1,7 @@
-import { ethereum, log } from "@graphprotocol/graph-ts";
+import { log } from "@graphprotocol/graph-ts";
 import {
   generateOrderId,
   generateTradeId,
-  generateIdFromRawTradeTuple,
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
   addOpenLimitOrder,
@@ -10,6 +9,7 @@ import {
 } from "../../../access/entity";
 import { getStorageContract } from "../../../access/contract";
 import {
+  OPEN_LIMIT_ORDER_STATUS,
   OPEN_LIMIT_ORDER_TYPE_IX,
   TRADE_STATUS,
   TRADE_TYPE,
@@ -68,6 +68,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     cOpenLimitOrder,
     false
   );
+  openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.OPEN;
   log.info("[handleOpenLimitPlaced] Constructed OpenLimitOrder {}", [
     openLimitOrderId,
   ]);
