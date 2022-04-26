@@ -1,4 +1,5 @@
 import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
+import { ZERO_ADDRESS } from "../../../../helpers/constants";
 import {
   GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   GFarmTradingStorageV5__openTradesResult,
@@ -63,7 +64,7 @@ export function updateTradeFromContractObject(
   const tp = cTrade.value8;
   const sl = cTrade.value9;
 
-  if (leverage.toI32() == 0) {
+  if (trader.toHexString() == ZERO_ADDRESS) {
     throw Error("[updateTradeFromContractObject] No trade");
   }
 

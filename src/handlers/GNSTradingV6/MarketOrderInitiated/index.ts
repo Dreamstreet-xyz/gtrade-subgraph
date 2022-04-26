@@ -1,10 +1,10 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
   generateOrderId,
-  generateIdFromRawTradeTuple,
   addPendingMarketOrder,
   getOpenTradeId,
   createTraderIfDne,
+  generateTradeId,
 } from "../../../access/entity";
 import { getStorageContract } from "../../../access/contract";
 import {
@@ -12,9 +12,11 @@ import {
   TRADE_TYPE,
   PRICE_ORDER_STATUS,
   PRICE_ORDER_TYPE,
+  ZERO_ADDRESS,
 } from "../../../helpers/constants";
 import { MarketOrderInitiated } from "../../../types/GNSTradingV6/GNSTradingV6";
 import { Trade, MarketOrder, TradeInfo } from "../../../types/schema";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 
 /**
  * Event is emitted when a market order is initiated. Market order is a price order that can be placed
@@ -35,11 +37,15 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   const open = event.params.open;
   const orderId = event.params.orderId;
 
-  log.info("[handleMarketOrderInitiated] OrderId {}, Trader {}, PairIndex {}", [
-    orderId.toString(),
-    trader.toHexString(),
-    pairIndex.toString(),
-  ]);
+  log.info(
+    "[handleMarketOrderInitiated] OrderId {}, Trader {}, PairIndex {}, Open {}",
+    [
+      orderId.toString(),
+      trader.toHexString(),
+      pairIndex.toString(),
+      open ? "true" : "false",
+    ]
+  );
 
   createTraderIfDne(trader);
 
@@ -59,10 +65,10 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     []
   );
 
-  if (_trade.leverage.toI32() == 0) {
+  if (_trade.trader.toHexString() == ZERO_ADDRESS) {
     log.error(
-      "[handleMarketOrderInitiated] No market order found in contract orderId: {}, trade leverage: {}",
-      [orderId.toString(), _trade.leverage.toString()]
+      "[handleMarketOrderInitiated] No market order found in contract orderId: {}, trader: {}",
+      [orderId.toString(), _trade.trader.toHexString()]
     );
     return;
   }
@@ -89,11 +95,11 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
 
   if (open) {
     // construct Trade object
-    const tradeId = generateIdFromRawTradeTuple(
+    const tradeId = generateTradeId(event.transaction, event.logIndex, {
       trader,
       pairIndex,
-      _trade.index
-    );
+      index: _trade.index,
+    });
     const trade = new Trade(tradeId);
     trade.status = TRADE_STATUS.OPENING;
     trade.trader = trader.toHexString();
@@ -122,8 +128,16 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     const trade = Trade.load(tradeId);
     if (!trade) {
       log.error(
-        "[handleMarketOrderInitiated] Could not load trade for market order {}",
-        [orderId.toString()]
+        "[handleMarketOrderInitiated] Could not load Trade for OrderId {}, MarketOrder {}, {}",
+        [
+          orderId.toString(),
+          marketOrder.id,
+          stringifyTuple({
+            trader,
+            pairIndex,
+            index: _trade.index,
+          }),
+        ]
       );
       return;
     }
@@ -152,6 +166,9 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
         [orderId.toString(), trade.id]
       );
     }
+
+    // associate market order with trade
+    marketOrder.trade = trade.id;
 
     // save
     trade.save();

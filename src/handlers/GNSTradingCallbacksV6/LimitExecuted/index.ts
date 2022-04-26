@@ -47,9 +47,10 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   const openLimitTuple: TradeTuple = { trader, pairIndex, index: limitIndex };
   const tuple: TradeTuple = { trader, pairIndex, index };
 
-  log.info("[handleLimitExecuted] OrderId {}, Trader {}", [
+  log.info("[handleLimitExecuted] OrderId {}, Trader {}, LimitOrderType {}", [
     orderId.toString(),
     trader.toHexString(),
+    LIMIT_ORDER_TYPE_IX[orderType],
   ]);
 
   const storage = getStorageContract();

@@ -105,9 +105,28 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     tradeInfo.save();
   } else {
     trade.status = TRADE_STATUS.CLOSED;
-    trade.percentProfit = BigInt.fromI32(-100);
+    trade.percentProfit = percentProfit;
     trade.closePrice = price;
     log.info("[handleMarketExecuted] Updated Trade {} to CLOSED", [trade.id]);
+
+    // update trade info
+    const tradeInfoId = trade.tradeInfo;
+    if (tradeInfoId) {
+      let tradeInfo = TradeInfo.load(tradeInfoId);
+      if (!tradeInfo) {
+        tradeInfo = new TradeInfo(tradeInfoId);
+      }
+      tradeInfo.beingMarketClosed = false;
+      tradeInfo.save();
+      log.info("[handleMarketOrderInitiated] Updated TradeInfo obj {}", [
+        tradeInfoId,
+      ]);
+    } else {
+      log.warning(
+        "[handleMarketOrderInitiated] TradeInfo is null for OrderId {}, MarketOrder {}, Trade {}",
+        [orderId.toString(), marketOrder.id, trade.id]
+      );
+    }
 
     // update state
     removeOpenTrade({ trader, pairIndex, index });
