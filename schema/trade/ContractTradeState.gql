@@ -10,5 +10,5 @@ type ContractTradeState @entity {
 
 type ContractIdMapping @entity {
   id: ID!
-  entityId: String
+  entityId: String!
 }

@@ -1,9 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
-import {
-  getTradesState,
-  removePendingMarketOrder,
-} from "../../../access/entity";
-import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractTradeState/pendingMarketOrdersLookup";
+import { removePendingMarketOrder } from "../../../access/entity";
+import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractIdMapping/pendingMarketOrdersLookup";
 import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
 import { MarketOpenCanceled } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
 import { MarketOrder, Trade } from "../../../types/schema";
@@ -20,11 +17,10 @@ import { MarketOrder, Trade } from "../../../types/schema";
  */
 export function handleMarketOpenCanceled(event: MarketOpenCanceled): void {
   const orderId = event.params.orderId;
-
-  let state = getTradesState();
+  log.info("[handleMarketOpenCanceled] OrderId {}", [orderId.toString()]);
 
   // update MarketOrder
-  const marketOrderId = getPendingMarketOrderId(state, orderId.toString());
+  const marketOrderId = getPendingMarketOrderId(orderId.toString());
   const marketOrder = MarketOrder.load(marketOrderId);
   if (!marketOrder) {
     log.error(
@@ -34,6 +30,9 @@ export function handleMarketOpenCanceled(event: MarketOpenCanceled): void {
     return;
   }
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
+  log.info("[handleMarketOpenCanceled] Found market order {}", [
+    marketOrder.id,
+  ]);
 
   // update Trade
   let trade = Trade.load(marketOrder.trade);
@@ -45,12 +44,12 @@ export function handleMarketOpenCanceled(event: MarketOpenCanceled): void {
     return;
   }
   trade.status = TRADE_STATUS.CANCELED;
+  log.info("[handleMarketOpenCanceled] Updated trade {}", [trade.id]);
 
   // update state
-  state = removePendingMarketOrder(state, orderId.toString(), false);
+  removePendingMarketOrder(orderId.toString());
 
   // save
   marketOrder.save();
   trade.save();
-  state.save();
 }

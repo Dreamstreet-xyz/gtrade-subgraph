@@ -1,6 +1,5 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
-  getTradesState,
   generateOrderId,
   generateIdFromRawTradeTuple,
   addPendingMarketOrder,
@@ -36,6 +35,12 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   const open = event.params.open;
   const orderId = event.params.orderId;
 
+  log.info("[handleMarketOrderInitiated] OrderId {}, Trader {}, PairIndex {}", [
+    orderId.toString(),
+    trader.toHexString(),
+    pairIndex.toString(),
+  ]);
+
   createTraderIfDne(trader);
 
   // read storage contract state for trade details
@@ -49,8 +54,12 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   const slippageP = cPendingMarketOrder.value3;
   const spreadReductionP = cPendingMarketOrder.value4;
   const tokenId = cPendingMarketOrder.value5;
+  log.info(
+    "[handleMarketOrderInitiated] Fetched pendingMarketOrder from contract",
+    []
+  );
 
-  if (Number(_trade.leverage) === 0) {
+  if (_trade.leverage.toI32() === 0) {
     log.error(
       "[handleMarketOrderInitiated] No market order found in contract {}",
       [orderId.toString()]
@@ -70,13 +79,13 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   marketOrder.wantedPrice = wantedPrice;
   marketOrder.slippageP = slippageP;
   marketOrder.spreadReductionP = spreadReductionP;
-  marketOrder.tokenId = tokenId;
+  marketOrder.tokenId = tokenId.toI32();
   marketOrder.type = open
     ? PRICE_ORDER_TYPE.MARKET_OPEN
     : PRICE_ORDER_TYPE.MARKET_CLOSE;
-
-  // read storage state
-  let tradesState = getTradesState();
+  log.info("[handleMarketOrderInitiated] Created MarketOrder obj {}", [
+    marketOrderId,
+  ]);
 
   if (open) {
     // construct Trade object
@@ -89,11 +98,11 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     trade.status = TRADE_STATUS.OPENING;
     trade.trader = trader.toHexString();
     trade.type = TRADE_TYPE.MARKET_TRADE;
-    trade.pairIndex = _trade.pairIndex;
-    trade.index = _trade.index;
+    trade.pairIndex = _trade.pairIndex.toI32();
+    trade.index = _trade.index.toI32();
     trade.positionSizeDai = _trade.positionSizeDai;
     trade.buy = _trade.buy;
-    trade.leverage = _trade.leverage;
+    trade.leverage = _trade.leverage.toI32();
     trade.tp = _trade.tp;
     trade.sl = _trade.sl;
 
@@ -102,9 +111,10 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
 
     // save
     trade.save();
+    log.info("[handleMarketOrderInitiated] Created Trade obj {}", [tradeId]);
   } else {
     // retreive Trade object
-    const tradeId = getOpenTradeId(tradesState, {
+    const tradeId = getOpenTradeId({
       trader,
       pairIndex,
       index: _trade.index,
@@ -120,16 +130,26 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
 
     // transition
     trade.status = TRADE_STATUS.CLOSING;
+    log.info("[handleMarketOrderInitiated] Transitioned Trade obj {}", [
+      tradeId,
+    ]);
 
     // update trade info
-    if (trade.tradeInfo) {
-      const tradeInfo = new TradeInfo(trade.tradeInfo);
+    const tradeInfoId = trade.tradeInfo;
+    if (tradeInfoId) {
+      let tradeInfo = TradeInfo.load(tradeInfoId);
+      if (!tradeInfo) {
+        tradeInfo = new TradeInfo(tradeInfoId);
+      }
       tradeInfo.beingMarketClosed = true;
       tradeInfo.save();
+      log.info("[handleMarketOrderInitiated] Updated TradeInfo obj {}", [
+        tradeInfoId,
+      ]);
     } else {
       log.warning(
-        "[handleMarketOrderInitiated] trade.tradeInfo is null for market order {}",
-        [orderId.toString()]
+        "[handleMarketOrderInitiated] trade.tradeInfo is null for market order {} and trade {}",
+        [orderId.toString(), trade.id]
       );
     }
 
@@ -138,14 +158,8 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   }
 
   // update state
-  tradesState = addPendingMarketOrder(
-    tradesState,
-    orderId.toString(),
-    marketOrderId,
-    false
-  );
+  addPendingMarketOrder(orderId.toString(), marketOrderId, true);
 
   // save
   marketOrder.save();
-  tradesState.save();
 }

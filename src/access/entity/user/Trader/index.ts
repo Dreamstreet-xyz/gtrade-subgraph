@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 import { Trader } from "../../../../types/schema";
 
 export function getTraderOrCreate(address: Address): Trader {
@@ -12,5 +12,8 @@ export function createTraderIfDne(address: Address): void {
   if (!existing) {
     const newTrader = new Trader(address.toHexString());
     newTrader.save();
+    log.info("[createTraderIfDne] Created new Trader {}", [
+      address.toHexString(),
+    ]);
   }
 }

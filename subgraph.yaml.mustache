@@ -1,4 +1,4 @@
-specVersion: 0.0.6
+specVersion: 0.0.4
 description: >-
   gTrade active and historical trading data
 schema:
@@ -26,6 +26,8 @@ dataSources:
         - SlUpdated
         - TpUpdated
       abis:
+        - name: GNSTradingCallbacksV6
+          file: ./abis/GNSTradingCallbacksV6.json
         - name: GNSTradingV6
           file: ./abis/GNSTradingV6.json
         - name: GFarmTradingStorageV5
@@ -75,6 +77,14 @@ dataSources:
       abis:
         - name: GNSTradingCallbacksV6
           file: ./abis/GNSTradingCallbacksV6.json
+        - name: GNSTradingV6
+          file: ./abis/GNSTradingV6.json
+        - name: GFarmTradingStorageV5
+          file: ./abis/GFarmTradingStorageV5.json
+        - name: GNSPriceAggregatorV6
+          file: ./abis/GNSPriceAggregatorV6.json
+        - name: GNSNftRewardsV6
+          file: ./abis/GNSNftRewardsV6.json
       eventHandlers:
         - event: LimitExecuted(uint256,uint256,(address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),address,uint8,uint256,uint256,int256)
           handler: handleLimitExecuted

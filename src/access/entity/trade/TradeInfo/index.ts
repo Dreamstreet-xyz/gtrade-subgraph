@@ -1,4 +1,4 @@
-import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
+import { Address, ethereum, BigInt, log } from "@graphprotocol/graph-ts";
 import { GFarmTradingStorageV5__openTradesInfoResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
 import { TradeInfo } from "../../../../types/schema";
 import { TradeTuple, generateIdFromTradeTuple } from "../Trade";
@@ -14,6 +14,14 @@ export function generateTradeInfoId(
   logIndex: BigInt,
   tradeTuple: TradeTuple
 ): string {
+  log.debug(
+    "[generateTradeInfoId] Generating trade info id for trade tuple ({}, {}, {})",
+    [
+      tradeTuple.trader.toHexString(),
+      tradeTuple.pairIndex.toString(),
+      tradeTuple.index.toString(),
+    ]
+  );
   return (
     tx.hash.toHexString() +
     "-" +
@@ -33,12 +41,23 @@ export function updateTradeInfoFromContractObject(
   const tpLastUpdated = cTradeInfo.value3;
   const slLastUpdated = cTradeInfo.value4;
   const beingMarketClosed = cTradeInfo.value5;
+  log.debug(
+    "[updateTradeInfoFromContractObject] cTradeInfo tokenId {}, tokenPriceDai {}, openInterestDai {}, tpLastUpdated {}, slLastUpdated {}, beingMarketClosed {}",
+    [
+      tokenId.toString(),
+      tokenPriceDai.toString(),
+      openInterestDai.toString(),
+      tpLastUpdated.toString(),
+      slLastUpdated.toString(),
+      beingMarketClosed.toString(),
+    ]
+  );
 
-  if (Number(tokenPriceDai) === 0) {
+  if (tokenPriceDai.equals(BigInt.fromI32(0))) {
     throw Error("[updateTradeInfoFromContractObject] No TradeInfo");
   }
 
-  tradeInfo.tokenId = tokenId;
+  tradeInfo.tokenId = tokenId.toI32();
   tradeInfo.tokenPriceDai = tokenPriceDai;
   tradeInfo.openInterestDai = openInterestDai;
   tradeInfo.tpLastUpdated = tpLastUpdated;

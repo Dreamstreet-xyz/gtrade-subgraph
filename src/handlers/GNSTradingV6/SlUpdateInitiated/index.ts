@@ -1,12 +1,11 @@
 import { log } from "@graphprotocol/graph-ts";
-import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { stringifyTuple, TradeTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import { getPriceAggregatorContract } from "../../../access/contract/GNSPriceAggregatorV6";
 import {
   addPendingSlUpdateOrder,
   generateOrderId,
   getOpenTradeId,
-  getTradesState,
   updateTradeFromContractObject,
 } from "../../../access/entity";
 import {
@@ -35,24 +34,38 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
   const newSl = event.params.newSl;
   const orderId = event.params.orderId;
 
+  log.info(
+    "[handleSlUpdateInitiated] Trader {}, PairIndex {}, Index {}, NewSL {}, OrderId {}",
+    [
+      trader.toHexString(),
+      pairIndex.toString(),
+      index.toString(),
+      newSl.toString(),
+      orderId.toString(),
+    ]
+  );
+
   const tuple: TradeTuple = { trader, pairIndex, index };
 
   const aggregator = getPriceAggregatorContract();
   const storage = getStorageContract();
-  let state = getTradesState();
 
   // fetch and update Trade
-  const tradeId = getOpenTradeId(state, tuple);
+  const tradeId = getOpenTradeId(tuple);
   let trade = Trade.load(tradeId);
   if (!trade) {
     log.error("[handleSLUpdateInitiated] Trade {} not found for tuple {}", [
       tradeId,
-      JSON.stringify(tuple),
+      stringifyTuple(tuple),
     ]);
     return;
   }
   const cTrade = storage.openTrades(trader, pairIndex, index);
   trade = updateTradeFromContractObject(trade, cTrade, false);
+  log.info(
+    "[handleSLUpdateInitiated] Fetched openTrades from contract and updated Trade obj {}",
+    [tradeId]
+  );
 
   // create SLUpdateOrder
   // instead of reading aggregator contract state,we just use the new SL since that's the only difference
@@ -66,17 +79,14 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
   slUpdateOrder.trade = trade.id;
   slUpdateOrder.type = PRICE_ORDER_TYPE.UPDATE_SL;
   slUpdateOrder.newSl = newSl;
+  log.info("[handleSLUpdateInitiated] Created SlUpdateOrder obj {}", [
+    slUpdateOrderId,
+  ]);
 
   // update state
-  state = addPendingSlUpdateOrder(
-    state,
-    orderId.toHexString(),
-    slUpdateOrderId,
-    false
-  );
+  addPendingSlUpdateOrder(orderId.toString(), slUpdateOrderId, true);
 
   // save
   slUpdateOrder.save();
   trade.save();
-  state.save();
 }

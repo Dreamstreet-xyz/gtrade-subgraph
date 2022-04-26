@@ -1,12 +1,6 @@
-console.log("handleLimitExecuted");
 export { handleLimitExecuted } from "./LimitExecuted";
-console.log("handleMarketCloseCanceled");
 export { handleMarketCloseCanceled } from "./MarketCloseCanceled";
-console.log("handleMarketExecuted");
 export { handleMarketExecuted } from "./MarketExecuted";
-console.log("handleMarketOpenCanceled");
 export { handleMarketOpenCanceled } from "./MarketOpenCanceled";
-console.log("handleSlCanceled");
 export { handleSlCanceled } from "./SlCanceled";
-console.log("handleSlUpdated");
 export { handleSlUpdated } from "./SlUpdated";

@@ -2,7 +2,6 @@ import { log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "../../../access/contract";
 import {
   getOpenLimitOrderId,
-  getTradesState,
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
 } from "../../../access/entity";
@@ -25,11 +24,16 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
   const pairIndex = event.params.pairIndex;
   const index = event.params.index;
 
-  const state = getTradesState();
+  log.info("[handleOpenLimitUpdated] Trader {}, PairIndex {}, Index {}", [
+    trader.toHexString(),
+    pairIndex.toString(),
+    index.toString(),
+  ]);
+
   const storage = getStorageContract();
 
   // read OpenLimitOrder and update
-  const openLimitOrderId = getOpenLimitOrderId(state, {
+  const openLimitOrderId = getOpenLimitOrderId({
     trader,
     pairIndex,
     index,
@@ -53,6 +57,10 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
     cOpenLimitOrder,
     false
   );
+  log.info(
+    "[handleOpenLimitUpdated] Fetched openLimitOrder from contract and updated OpenLimitOrder obj {}",
+    [openLimitOrderId]
+  );
 
   // read Trade and update
   let trade = Trade.load(openLimitOrder.trade);
@@ -67,6 +75,10 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
     trade,
     cOpenLimitOrder,
     false
+  );
+  log.info(
+    "[handleOpenLimitUpdated] Fetched trade from contract and updated Trade obj {}",
+    [trade.id]
   );
 
   // save

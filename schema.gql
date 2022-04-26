@@ -8,6 +8,11 @@ type ContractTradeState @entity {
   _openTradesInfoLookup: String
 }
 
+type ContractIdMapping @entity {
+  id: ID!
+  entityId: String!
+}
+
 enum TradeStatus {
   LIMIT_ORDER_PENDING
   LIMIT_ORDER_CANCELED

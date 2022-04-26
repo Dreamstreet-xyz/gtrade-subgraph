@@ -1,9 +1,8 @@
 import { log } from "@graphprotocol/graph-ts";
-import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { stringifyTuple, TradeTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import {
   getPendingSlUpdateOrderId,
-  getTradesState,
   removePendingSlUpdateOrder,
   updateTradeAndTradeInfoToLatestFromTuple,
 } from "../../../access/entity";
@@ -30,39 +29,38 @@ export function handleSlUpdated(event: SlUpdated): void {
   const index = event.params.index;
   const newSl = event.params.newSl;
 
+  log.info(
+    "[handleSlUpdated] OrderId {}, Trader {}, PairIndex {}, Index {}, NewSl {}",
+    [
+      orderId.toString(),
+      trader.toHexString(),
+      pairIndex.toString(),
+      index.toString(),
+      newSl.toString(),
+    ]
+  );
+
   const tuple: TradeTuple = { trader, pairIndex, index };
 
-  let state = getTradesState();
   const storage = getStorageContract();
 
   // update SlUpdateOrder
-  const slUpdateOrderId = getPendingSlUpdateOrderId(
-    state,
-    orderId.toHexString()
-  );
+  const slUpdateOrderId = getPendingSlUpdateOrderId(orderId.toString());
   const slUpdateOrder = SlUpdateOrder.load(slUpdateOrderId);
   if (!slUpdateOrder) {
     log.error("[handleSlUpdated] SlUpdateOrder {} not found for orderId {}", [
       slUpdateOrderId,
-      orderId.toHexString(),
+      orderId.toString(),
     ]);
     return;
   }
   slUpdateOrder.status = PRICE_ORDER_STATUS.RECEIVED;
+  log.info("[handleSlUpdated] Updated SlUpdateOrder {}", [slUpdateOrderId]);
 
   // update state
-  state = removePendingSlUpdateOrder(state, orderId.toHexString(), false);
-
-  try {
-    updateTradeAndTradeInfoToLatestFromTuple(state, storage, tuple, true);
-  } catch (e) {
-    log.error(
-      "[GNSTradingCallbacksV6.handleSlUpdated] Error updating trade and tradeInfo for tuple {}",
-      [JSON.stringify(tuple)]
-    );
-  }
+  removePendingSlUpdateOrder(orderId.toString());
+  updateTradeAndTradeInfoToLatestFromTuple(storage, tuple, true);
 
   // save
   slUpdateOrder.save();
-  state.save();
 }

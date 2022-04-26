@@ -8,8 +8,8 @@ import { GNSPriceAggregatorV6 } from "../../../types/GNSTradingV6/GNSPriceAggreg
  */
 export function getPriceAggregatorContract(): GNSPriceAggregatorV6 {
   const address =
-    (dataSource.network() === NETWORKS.POLYGON &&
-      POLYGON.gnsPriceAggregatorV6) ||
-    MUMBAI.gnsPriceAggregatorV6;
+    dataSource.network() === NETWORKS.POLYGON
+      ? POLYGON.gnsPriceAggregatorV6
+      : MUMBAI.gnsPriceAggregatorV6;
   return GNSPriceAggregatorV6.bind(Address.fromString(address));
 }

@@ -2,14 +2,13 @@ import { BigInt, log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "../../../access/contract";
 import {
   getPendingMarketOrderId,
-  getTradesState,
   updateTradeFromContractObject,
   removePendingMarketOrder,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
   removeOpenTradeInfo,
-} from "../../../access/entity/trade/ContractTradeState";
+} from "../../../access/entity/trade/ContractIdMapping";
 import {
   PRICE_ORDER_STATUS,
   TRADE_STATUS,
@@ -37,14 +36,18 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   const pairIndex = event.params.pairIndex;
   const index = event.params.index;
 
-  let state = getTradesState();
+  log.info("[handleMarketCloseCanceled] OrderId {}, Trader {}", [
+    orderId.toString(),
+    trader.toHexString(),
+  ]);
+
   const contract = getStorageContract();
 
   // set price of order to 0 as that is what is returened by the contract
   const price = BigInt.fromI32(0);
 
   // update MarketOrder
-  const marketOrderId = getPendingMarketOrderId(state, orderId.toString());
+  const marketOrderId = getPendingMarketOrderId(orderId.toString());
   const marketOrder = MarketOrder.load(marketOrderId);
   if (!marketOrder) {
     log.error(
@@ -55,6 +58,9 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   }
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   marketOrder.price = price;
+  log.info("[handleMarketCloseCanceled] Updated MarketOrder {}", [
+    marketOrderId,
+  ]);
 
   // update Trade
   let trade = Trade.load(marketOrder.trade);
@@ -71,24 +77,27 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   // then it is automatically closed, otherwise it's still open
   const cTrade = contract.openTrades(trader, pairIndex, index);
   if (cTrade && cTrade.value0.toHexString() !== ZERO_ADDRESS) {
+    log.info("[handleMarketCloseCanceled] Trade is still open", []);
     // update whole object from contract
     trade = updateTradeFromContractObject(trade, cTrade, false);
   } else {
+    log.info("[handleMarketCloseCanceled] Trade is closed", []);
     // trade is closed
     trade.status = TRADE_STATUS.CLOSED;
     trade.percentProfit = BigInt.fromI32(-100);
     trade.closePrice = price;
   }
+  log.info("[handleMarketCloseCanceled] Updated Trade {}", [trade.id]);
 
   // update state
   if (!cTrade || cTrade.value0.toHexString() === ZERO_ADDRESS) {
-    state = removeOpenTrade(state, { trader, pairIndex, index }, false);
-    state = removeOpenTradeInfo(state, { trader, pairIndex, index }, false);
+    removeOpenTrade({ trader, pairIndex, index });
+    removeOpenTradeInfo({ trader, pairIndex, index });
   }
-  state = removePendingMarketOrder(state, orderId.toString(), false);
+
+  removePendingMarketOrder(orderId.toString());
 
   // save
   marketOrder.save();
   trade.save();
-  state.save();
 }

@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts";
+import { Address, log } from "@graphprotocol/graph-ts";
 import { NftHolder } from "../../../../types/schema";
 
 export function getNftHolderOrCreate(address: Address): NftHolder {
@@ -13,5 +13,8 @@ export function createNftHolderIfDne(address: Address): void {
   if (!existing) {
     const newNftHolder = new NftHolder(address.toHexString());
     newNftHolder.save();
+    log.info("[createNftHolderIfDne] Created new NftHolder {}", [
+      address.toHexString(),
+    ]);
   }
 }

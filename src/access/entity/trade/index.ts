@@ -1,7 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
 import { GFarmTradingStorageV5 } from "../../../types/GNSTradingV6/GFarmTradingStorageV5";
-import { ContractTradeState, Trade, TradeInfo } from "../../../types/schema";
-import { getOpenTradeId, getOpenTradeInfoId } from "./ContractTradeState";
+import { Trade, TradeInfo } from "../../../types/schema";
+import { getOpenTradeId, getOpenTradeInfoId } from "./ContractIdMapping";
 import {
   TradeTuple,
   updateTradeFromContractObject,
@@ -15,13 +15,12 @@ export class TradeAndTradeInfo {
 }
 
 export function updateTradeAndTradeInfoToLatestFromTuple(
-  state: ContractTradeState,
   storage: GFarmTradingStorageV5,
   tuple: TradeTuple,
   save: boolean
 ): TradeAndTradeInfo {
   // update Trade obj from contract
-  const tradeId = getOpenTradeId(state, tuple);
+  const tradeId = getOpenTradeId(tuple);
   let trade = Trade.load(tradeId);
   if (!trade) {
     log.error(
@@ -34,7 +33,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
   trade = updateTradeFromContractObject(trade, cTrade, false);
 
   // update TradeInfo obj from contract
-  const tradeInfoId = getOpenTradeInfoId(state, tuple);
+  const tradeInfoId = getOpenTradeInfoId(tuple);
   let tradeInfo = TradeInfo.load(tradeInfoId);
   if (!tradeInfo) {
     log.error(

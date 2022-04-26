@@ -1,7 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
   getPendingMarketOrderId,
-  getTradesState,
   removePendingMarketOrder,
 } from "../../../access/entity";
 import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
@@ -23,24 +22,28 @@ export function handleChainlinkCallbackTimeout(
 ): void {
   const orderId = event.params.orderId;
 
+  log.info("[handleChainlinkCallbackTimeout] OrderId {}", [orderId.toString()]);
+
   // read orderId from state
-  let state = getTradesState();
-  const marketOrderId = getPendingMarketOrderId(state, orderId.toHexString());
+  const marketOrderId = getPendingMarketOrderId(orderId.toString());
   const marketOrder = MarketOrder.load(marketOrderId);
   if (!marketOrder) {
     log.error(
       "[handleChainlinkCallbackTimeout] MarketOrder not found for orderId",
-      [orderId.toHexString()]
+      [orderId.toString()]
     );
     return;
   }
   marketOrder.status = PRICE_ORDER_STATUS.TIMED_OUT;
+  log.info("[handleChainlinkCallbackTimeout] Updated MarketOrder {}", [
+    marketOrderId,
+  ]);
 
   // determine if the order was on open or close using the attached Trade obj
   const trade = Trade.load(marketOrder.trade);
   if (!trade) {
     log.error("[handleChainlinkCallbackTimeout] Trade not found for orderId", [
-      orderId.toHexString(),
+      orderId.toString(),
     ]);
     return;
   }
@@ -52,11 +55,12 @@ export function handleChainlinkCallbackTimeout(
     // on close -> CLOSE_TIMED_OUT
     trade.status = TRADE_STATUS.CLOSE_TIMED_OUT;
   }
+  log.info("[handleChainlinkCallbackTimeout] Updated Trade {}", [trade.id]);
+
   // unregister pending market order
-  state = removePendingMarketOrder(state, orderId.toHexString(), false);
+  removePendingMarketOrder(orderId.toString());
 
   // save
   marketOrder.save();
   trade.save();
-  state.save();
 }

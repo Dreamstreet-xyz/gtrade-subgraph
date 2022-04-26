@@ -1,4 +1,3 @@
-export { getTradesState } from "./trade/ContractTradeState";
 export {
   getOpenTradeInfoId,
   addOpenTradeInfo,
@@ -18,7 +17,7 @@ export {
   getPendingSlUpdateOrderId,
   addPendingSlUpdateOrder,
   removePendingSlUpdateOrder,
-} from "./trade/ContractTradeState";
+} from "./trade/ContractIdMapping";
 export {
   generateOrderId,
   updateNftOrderFromContractObject,

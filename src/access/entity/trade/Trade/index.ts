@@ -63,18 +63,18 @@ export function updateTradeFromContractObject(
   const tp = cTrade.value8;
   const sl = cTrade.value9;
 
-  if (Number(leverage) === 0) {
+  if (leverage.toI32() === 0) {
     throw Error("[updateTradeFromContractObject] No trade");
   }
 
   trade.trader = trader.toHexString();
-  trade.pairIndex = pairIndex;
-  trade.index = index;
+  trade.pairIndex = pairIndex.toI32();
+  trade.index = index.toI32();
   trade.initialPosToken = initialPosToken;
   trade.positionSizeDai = positionSizeDai;
   trade.openPrice = openPrice;
   trade.buy = buy;
-  trade.leverage = leverage;
+  trade.leverage = leverage.toI32();
   trade.tp = tp;
   trade.sl = sl;
 
@@ -89,11 +89,11 @@ export function updateTradeFromOpenLimitOrderContractObject(
   cOpenLimitOrder: GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   save: boolean
 ): Trade {
-  trade.pairIndex = cOpenLimitOrder.pairIndex;
-  trade.index = cOpenLimitOrder.index;
+  trade.pairIndex = cOpenLimitOrder.pairIndex.toI32();
+  trade.index = cOpenLimitOrder.index.toI32();
   trade.positionSizeDai = cOpenLimitOrder.positionSize;
   trade.buy = cOpenLimitOrder.buy;
-  trade.leverage = cOpenLimitOrder.leverage;
+  trade.leverage = cOpenLimitOrder.leverage.toI32();
   trade.tp = cOpenLimitOrder.tp;
   trade.sl = cOpenLimitOrder.sl;
 

@@ -11,10 +11,10 @@ export function updateNftOrderFromContractObject(
   save: boolean
 ): NftOrder {
   const nftHolder = cNftOrder.value0;
-  const nftId = cNftOrder.value1;
+  const nftId = cNftOrder.value1.toI32();
   const trader = cNftOrder.value2;
-  const pairIndex = cNftOrder.value3;
-  const index = cNftOrder.value4;
+  const pairIndex = cNftOrder.value3.toI32();
+  const index = cNftOrder.value4.toI32();
   const orderType = cNftOrder.value5;
 
   if (trader.toHexString() === ZERO_ADDRESS) {

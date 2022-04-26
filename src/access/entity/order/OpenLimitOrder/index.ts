@@ -15,7 +15,7 @@ export function updateOpenLimitOrderFromContractObject(
   openLimitOrder.minPrice = cOpenLimitOrder.minPrice;
   openLimitOrder.maxPrice = cOpenLimitOrder.maxPrice;
   openLimitOrder.block = cOpenLimitOrder.block;
-  openLimitOrder.tokenId = cOpenLimitOrder.tokenId;
+  openLimitOrder.tokenId = cOpenLimitOrder.tokenId.toI32();
 
   if (save) {
     openLimitOrder.save();

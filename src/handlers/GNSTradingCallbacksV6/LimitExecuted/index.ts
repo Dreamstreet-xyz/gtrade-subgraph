@@ -1,5 +1,5 @@
 import { log } from "@graphprotocol/graph-ts";
-import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { stringifyTuple, TradeTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import {
   addOpenTrade,
@@ -7,7 +7,6 @@ import {
   generateTradeInfoId,
   getPendingNftOrderId,
   getOpenLimitOrderId,
-  getTradesState,
   removePendingNftOrder,
   removeOpenLimitOrder,
   updateTradeFromContractObject,
@@ -16,7 +15,7 @@ import {
 import {
   removeOpenTrade,
   removeOpenTradeInfo,
-} from "../../../access/entity/trade/ContractTradeState";
+} from "../../../access/entity/trade/ContractIdMapping";
 import {
   LIMIT_ORDER_TYPE,
   LIMIT_ORDER_TYPE_IX,
@@ -41,15 +40,22 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   const positionSizeDai = event.params.positionSizeDai;
   const percentProfit = event.params.percentProfit;
 
-  const { trader, pairIndex, index } = t;
+  const trader = t.trader;
+  const pairIndex = t.pairIndex;
+  const index = t.index;
+
   const tuple: TradeTuple = { trader, pairIndex, index };
 
-  let state = getTradesState();
+  log.info("[handleLimitExecuted] OrderId {}, Trader {}", [
+    orderId.toString(),
+    trader.toHexString(),
+  ]);
+
   const storage = getStorageContract();
 
   // update NFTOrder
   // set status to RECEIVED
-  const nftOrderId = getPendingNftOrderId(state, orderId.toString());
+  const nftOrderId = getPendingNftOrderId(orderId.toString());
   const nftOrder = NftOrder.load(nftOrderId);
   if (!nftOrder) {
     log.error("[handleLimitExecuted] NftOrder {} not found for orderId {}", [
@@ -60,21 +66,29 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   }
   nftOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   nftOrder.price = price;
+  log.info("[handleLimitExecuted] Updated NftOrder {}", [nftOrderId]);
 
   // opening trade
   if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
+    log.info(
+      "[handleLimitExecuted] OpenLimitOrder was executed, finding for tuple {}, {}, {}",
+      [trader.toHexString(), pairIndex.toString(), index.toString()]
+    );
     // update OpenLimitOrder
     // assign NftOrder to OpenLimitOrder
-    const openLimitOrderId = getOpenLimitOrderId(state, tuple);
+    const openLimitOrderId = getOpenLimitOrderId(tuple);
     const openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
     if (!openLimitOrder) {
       log.error(
         "[handleLimitExecuted] OpenLimitOrder {} not found for tuple {}",
-        [openLimitOrderId, JSON.stringify(tuple)]
+        [openLimitOrderId, stringifyTuple(tuple)]
       );
       return;
     }
     openLimitOrder.nftOrder = nftOrderId;
+    log.info("[handleLimitExecuted] Updated OpenLimitOrder {}", [
+      openLimitOrderId,
+    ]);
 
     // sanity check Trade references
     if (nftOrder.trade !== openLimitOrder.trade) {
@@ -97,6 +111,10 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     trade = updateTradeFromContractObject(trade, cTrade, false);
     trade.status = TRADE_STATUS.OPEN;
     trade.openPrice = price;
+    log.info(
+      "[handleLimitExecuted] Fetched openTrades from contract and updated Trade obj {}",
+      [trade.id]
+    );
 
     const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
     const tradeInfoId = generateTradeInfoId(event.transaction, event.logIndex, {
@@ -109,20 +127,28 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       cTradeInfo,
       false
     );
+    log.info(
+      "[handleLimitExecuted] Fetched openTradesInfo from contract and created TradeInfo obj {}",
+      [tradeInfoId]
+    );
 
     // associate trade with trade info
     tradeInfo.trade = trade.id;
     trade.tradeInfo = tradeInfo.id;
 
     // update state
-    state = addOpenTrade(state, tuple, trade.id, false);
-    state = addOpenTradeInfo(state, tuple, tradeInfo.id, false);
-    state = removeOpenLimitOrder(state, tuple, false);
+    addOpenTrade(tuple, trade.id, true);
+    addOpenTradeInfo(tuple, tradeInfo.id, true);
+
+    removeOpenLimitOrder(tuple);
 
     // save
     trade.save();
     tradeInfo.save();
   } else {
+    log.info("[handleLimitExecuted] Trade {} was closed, updating", [
+      nftOrder.trade,
+    ]);
     // close Trade
     // update Trade
     const trade = Trade.load(nftOrder.trade);
@@ -137,18 +163,18 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     trade.positionSizeDai = positionSizeDai;
     trade.percentProfit = percentProfit;
     trade.closePrice = price;
+    log.info("[handleLimitExecuted] Updated Trade {}", [trade.id]);
 
     // update state
-    state = removeOpenTrade(state, tuple, false);
-    state = removeOpenTradeInfo(state, tuple, false);
+    removeOpenTrade(tuple);
+    removeOpenTradeInfo(tuple);
 
     // save
     trade.save();
   }
 
-  state = removePendingNftOrder(state, orderId.toString(), false);
+  removePendingNftOrder(orderId.toString());
 
   // save
   nftOrder.save();
-  state.save();
 }

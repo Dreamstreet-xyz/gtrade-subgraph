@@ -1,9 +1,9 @@
 import { ethereum, log } from "@graphprotocol/graph-ts";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import { getPriceAggregatorContract } from "../../../access/contract/GNSPriceAggregatorV6";
 import {
   generateOrderId,
-  getTradesState,
   updateNftOrderFromContractObject,
   getOpenLimitOrderId,
   addPendingNftOrder,
@@ -38,6 +38,16 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   const pairIndex = event.params.pairIndex;
   const orderId = event.params.orderId;
 
+  log.info(
+    "[handleNftOrderInitiated] OrderId {}, Trader {}, PairIndex {}, NftHolder {}",
+    [
+      orderId.toString(),
+      trader.toHexString(),
+      pairIndex.toString(),
+      nftHolder.toHexString(),
+    ]
+  );
+
   //   const txInput = ethereum.decode(
   //     "(uint8, address, uint256, uint256, uint256, uint256)",
   //     event.transaction.input
@@ -52,13 +62,17 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
 
   const storage = getStorageContract();
   const aggregator = getPriceAggregatorContract();
-  let state = getTradesState();
 
   // create NftHolder if dne
   createNftHolderIfDne(nftHolder);
 
   // fetch pending order and construct NftOrder
   const cPendingNftOrder = storage.reqID_pendingNftOrder(orderId);
+  log.info(
+    "[handleNftOrderInitiated] Fetched pendingNftOrder from contract",
+    []
+  );
+
   const nftOrder = updateNftOrderFromContractObject(
     new NftOrder(generateOrderId(event.transaction, event.logIndex, orderId)),
     cPendingNftOrder,
@@ -66,6 +80,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   );
   nftOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   nftOrder.type = PRICE_ORDER_TYPE_IX[aggregator.orders(orderId).value1];
+  log.info("[handleNftOrderInitiated] NftOrder created {}", [nftOrder.id]);
 
   const index = cPendingNftOrder.value4;
   const orderType = cPendingNftOrder.value5;
@@ -73,7 +88,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   let tradeId: string;
   if (LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN) {
     // lookup OpenLimitOrder to get Trade obj for updating
-    const openLimitOrderId = getOpenLimitOrderId(state, {
+    const openLimitOrderId = getOpenLimitOrderId({
       trader,
       pairIndex,
       index,
@@ -82,20 +97,23 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     if (!openLimitOrder) {
       log.error(
         "[handleNftOrderInitiated] OpenLimitOrder not found for openLimitOrderId {} / {}",
-        [openLimitOrderId, JSON.stringify({ trader, pairIndex, index })]
+        [openLimitOrderId, stringifyTuple({ trader, pairIndex, index })]
       );
       return;
     }
     tradeId = openLimitOrder.trade;
+    log.info("[handleNftOrderInitiated] OpenLimitOrder found {}", [
+      openLimitOrderId,
+    ]);
   } else {
     // lookup open trade to get Trade obj for updating
-    tradeId = getOpenTradeId(state, { trader, pairIndex, index });
+    tradeId = getOpenTradeId({ trader, pairIndex, index });
   }
 
   if (!tradeId) {
     log.error(
       "[handleNftOrderInitiated] tradeId not found for orderId {} / {}",
-      [orderId.toHexString(), JSON.stringify({ trader, pairIndex, index })]
+      [orderId.toString(), stringifyTuple({ trader, pairIndex, index })]
     );
     return;
   }
@@ -105,7 +123,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   if (!trade) {
     log.error(
       "[handleNftOrderInitiated] Trade {} not found for orderId {} / {}",
-      [orderId.toHexString(), JSON.stringify({ trader, pairIndex, index })]
+      [orderId.toString(), stringifyTuple({ trader, pairIndex, index })]
     );
     return;
   }
@@ -113,15 +131,15 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     LIMIT_ORDER_TYPE_IX[orderType] === LIMIT_ORDER_TYPE.OPEN
       ? TRADE_STATUS.OPENING
       : TRADE_STATUS.CLOSING;
+  log.info("[handleNftOrderInitiated] Trade updated {}", [tradeId]);
 
   // associate
   nftOrder.trade = tradeId;
 
   // update state
-  state = addPendingNftOrder(state, orderId.toHexString(), nftOrder.id, false);
+  addPendingNftOrder(orderId.toString(), nftOrder.id, true);
 
   // save
   nftOrder.save();
   trade.save();
-  state.save();
 }

@@ -1,10 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
-import { TradeTuple } from "../../../access/entity/trade/Trade";
+import { stringifyTuple, TradeTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
-import {
-  getTradesState,
-  updateTradeAndTradeInfoToLatestFromTuple,
-} from "../../../access/entity";
+import { updateTradeAndTradeInfoToLatestFromTuple } from "../../../access/entity";
 import { SlUpdated } from "../../../types/GNSTradingV6/GNSTradingV6";
 
 /**
@@ -24,17 +21,15 @@ export function handleSlUpdated(event: SlUpdated): void {
   const pairIndex = event.params.pairIndex;
   const index = event.params.index;
 
+  log.info("[handleSlUpdated] Trader {}, PairIndex {}, Index {}", [
+    trader.toHexString(),
+    pairIndex.toString(),
+    index.toString(),
+  ]);
+
   const tuple: TradeTuple = { trader, pairIndex, index };
 
   const storage = getStorageContract();
-  const state = getTradesState();
 
-  try {
-    updateTradeAndTradeInfoToLatestFromTuple(state, storage, tuple, true);
-  } catch (e) {
-    log.error(
-      "[GNSTradingV6.handleSlUpdated] Error updating trade and tradeInfo for tuple {}",
-      [JSON.stringify(tuple)]
-    );
-  }
+  updateTradeAndTradeInfoToLatestFromTuple(storage, tuple, true);
 }

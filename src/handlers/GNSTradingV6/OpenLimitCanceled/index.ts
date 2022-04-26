@@ -2,7 +2,6 @@ import { log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "../../../access/contract";
 import {
   getOpenLimitOrderId,
-  getTradesState,
   removeOpenLimitOrder,
 } from "../../../access/entity";
 import { OpenLimitCanceled } from "../../../types/GNSTradingV6/GNSTradingV6";
@@ -11,6 +10,7 @@ import {
   OPEN_LIMIT_ORDER_STATUS,
   TRADE_STATUS,
 } from "../../../helpers/constants";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 
 /**
  * Event is emitted when an open limit order is canceled before it's been fulfilled.
@@ -27,11 +27,14 @@ export function handleOpenLimitCanceled(event: OpenLimitCanceled): void {
   const pairIndex = event.params.pairIndex;
   const index = event.params.index;
 
-  let state = getTradesState();
-  const storage = getStorageContract();
+  log.info("[handleOpenLimitCanceled] Trader {}, PairIndex {}, Index {}", [
+    trader.toHexString(),
+    pairIndex.toString(),
+    index.toString(),
+  ]);
 
   // read OpenLimitOrder and update status
-  const openLimitOrderId = getOpenLimitOrderId(state, {
+  const openLimitOrderId = getOpenLimitOrderId({
     trader,
     pairIndex,
     index,
@@ -40,11 +43,14 @@ export function handleOpenLimitCanceled(event: OpenLimitCanceled): void {
   if (!openLimitOrder) {
     log.error(
       "[handleOpenLimitCanceled] OpenLimitOrder not found for tuple {}",
-      [JSON.stringify({ trader, pairIndex, index })]
+      [stringifyTuple({ trader, pairIndex, index })]
     );
     return;
   }
   openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.CANCELED;
+  log.info("[handleOpenLimitCanceled] Updated OpenLimitOrder {}", [
+    openLimitOrderId,
+  ]);
 
   // update Trade status
   const trade = Trade.load(openLimitOrder.trade);
@@ -56,12 +62,12 @@ export function handleOpenLimitCanceled(event: OpenLimitCanceled): void {
     return;
   }
   trade.status = TRADE_STATUS.CANCELED;
+  log.info("[handleOpenLimitCanceled] Updated Trade {}", [trade.id]);
 
   // update state
-  state = removeOpenLimitOrder(state, { trader, pairIndex, index }, false);
+  removeOpenLimitOrder({ trader, pairIndex, index });
 
   // save
   openLimitOrder.save();
   trade.save();
-  state.save();
 }

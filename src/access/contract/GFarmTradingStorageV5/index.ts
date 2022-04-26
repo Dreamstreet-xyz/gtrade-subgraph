@@ -8,8 +8,8 @@ import { NETWORKS, MUMBAI, POLYGON } from "../../../helpers/constants";
  */
 export function getStorageContract(): GFarmTradingStorageV5 {
   const address =
-    (dataSource.network() === NETWORKS.POLYGON &&
-      POLYGON.gfarmTradingStorageV5) ||
-    MUMBAI.gfarmTradingStorageV5;
+    dataSource.network() === NETWORKS.POLYGON
+      ? POLYGON.gfarmTradingStorageV5
+      : MUMBAI.gfarmTradingStorageV5;
   return GFarmTradingStorageV5.bind(Address.fromString(address));
 }

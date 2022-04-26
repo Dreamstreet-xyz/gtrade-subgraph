@@ -1,6 +1,5 @@
 import { ethereum, log } from "@graphprotocol/graph-ts";
 import {
-  getTradesState,
   generateOrderId,
   generateTradeId,
   generateIdFromRawTradeTuple,
@@ -36,6 +35,12 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   const pairIndex = event.params.pairIndex;
   const index = event.params.index;
 
+  log.info("[handleOpenLimitPlaced] Trader {}, pairIndex {}, index {}", [
+    trader.toHexString(),
+    pairIndex.toString(),
+    index.toString(),
+  ]);
+
   createTraderIfDne(trader);
 
   // read storage contract state for trade details
@@ -47,6 +52,10 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
 
   // get open limit order
   const cOpenLimitOrder = storage.getOpenLimitOrder(trader, pairIndex, index);
+  log.info(
+    "[handleOpenLimitPlaced] Fetched openLimitOrderId from contract {}",
+    [cOpenLimitOrderId.toString()]
+  );
 
   // construct OpenLimitOrder
   const openLimitOrderId = generateOrderId(
@@ -59,6 +68,9 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     cOpenLimitOrder,
     false
   );
+  log.info("[handleOpenLimitPlaced] Constructed OpenLimitOrder {}", [
+    openLimitOrderId,
+  ]);
 
   // const txInput = ethereum.decode(
   //   "((address, uint256, uint256, uint256, uint256, uint256, bool, uint256, uint256, uint256),tuple, uint8, uint256, uint256, address)",
@@ -70,6 +82,10 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     index
   );
   openLimitOrder.type = OPEN_LIMIT_ORDER_TYPE_IX[cType];
+  log.info(
+    "[handleOpenLimitPlaced] Fetched orderType from contract and set OpenLimitOrder type {}",
+    [OPEN_LIMIT_ORDER_TYPE_IX[cType]]
+  );
 
   // construct Trade
   const tradeId = generateTradeId(event.transaction, event.logIndex, {
@@ -85,14 +101,14 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   trade.trader = trader.toHexString();
   trade.type = TRADE_TYPE.LIMIT_ORDER_TRADE;
   trade.status = TRADE_STATUS.LIMIT_ORDER_PENDING;
+  log.info("[handleOpenLimitPlaced] Constructed Trade {}", [tradeId]);
 
   // reference one another
   trade.openLimitOrder = openLimitOrder.id;
   openLimitOrder.trade = trade.id;
 
   // read active state and update
-  const tradesState = addOpenLimitOrder(
-    getTradesState(),
+  const openLimitOrderMapping = addOpenLimitOrder(
     { trader, pairIndex, index },
     openLimitOrder.id,
     false
@@ -101,5 +117,5 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
   // save
   openLimitOrder.save();
   trade.save();
-  tradesState.save();
+  openLimitOrderMapping.save();
 }
