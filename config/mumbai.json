@@ -2,22 +2,22 @@
   "network": "mumbai",
   "gnsTradingV6": {
     "address": "0x49370DC7319d8439C895015cBAD8E35D381e7d73",
-    "startBlock": 26084522
+    "startBlock": 24794792
   },
   "gnsTradingCallbacksV6": {
     "address": "0xbd124b3dae1fadeb421db545ddcb4c2146d60627",
-    "startBlock": 26084522
+    "startBlock": 24794792
   },
   "gfarmTradingStorageV5": {
     "address": "0x4d2df485c608aa55a23d8d98dd2b4fa24ba0f2cf",
-    "startBlock": 26084522
+    "startBlock": 24794792
   },
   "gnsPriceAggregatorV6": {
     "address": "0x5f105e929789fcae415cb03ea28d1f60c6091d6d",
-    "startBlock": 26084522
+    "startBlock": 24794792
   },
   "gnsNftRewardsV6": {
     "address": "0x3982e3de77dad60373c0c2c539fcb93bd288d2f5",
-    "startBlock": 26084522
+    "startBlock": 24794792
   }
 }

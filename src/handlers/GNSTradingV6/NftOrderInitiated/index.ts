@@ -124,7 +124,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
 
   if (!tradeId) {
     log.error(
-      "[handleNftOrderInitiated] tradeId not found for orderId {} / {}",
+      "[handleNftOrderInitiated] Open trade ID not found for OrderId: {}, Tuple: {}",
       [orderId.toString(), stringifyTuple({ trader, pairIndex, index })]
     );
     return;

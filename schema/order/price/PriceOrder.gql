@@ -29,7 +29,7 @@ interface PriceOrder {
   tokenId: Int
 
   "Received order price"
-  price: BigInt
+  price: BigInt!
 
   "Created timestamp"
   createdAtTimestamp: BigInt!

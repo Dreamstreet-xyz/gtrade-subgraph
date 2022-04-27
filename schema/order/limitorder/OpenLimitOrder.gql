@@ -2,6 +2,7 @@ enum OpenLimitOrderStatus {
   NONE
   OPEN
   CANCELED
+  FULFILLING
   FULFILLED
 }
 

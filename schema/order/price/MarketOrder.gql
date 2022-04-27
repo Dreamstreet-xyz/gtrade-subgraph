@@ -26,7 +26,7 @@ type MarketOrder implements PriceOrder @entity {
   spreadReductionP: BigInt!
 
   "Received order price"
-  price: BigInt
+  price: BigInt!
 
   "Created timestamp"
   createdAtTimestamp: BigInt!

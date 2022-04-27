@@ -128,6 +128,18 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
       pairIndex,
       index: _trade.index,
     });
+
+    if (!tradeId) {
+      log.error(
+        "[handleMarketOrderInitiated] Open trade ID not found for OrderId: {}, Tuple: {}",
+        [
+          orderId.toString(),
+          stringifyTuple({ trader, pairIndex, index: _trade.index }),
+        ]
+      );
+      return;
+    }
+
     const trade = Trade.load(tradeId);
     if (!trade) {
       log.error(
