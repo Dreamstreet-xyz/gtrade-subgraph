@@ -11,6 +11,7 @@ import {
   removeOpenLimitOrder,
   updateTradeFromContractObject,
   updateTradeInfoFromContractObject,
+  createOrLoadTradeInfo,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -69,6 +70,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   }
   nftOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   nftOrder.price = price;
+
   log.info("[handleLimitExecuted] Updated NftOrder {}", [nftOrderId]);
 
   // opening trade
@@ -90,6 +92,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     }
     openLimitOrder.nftOrder = nftOrderId;
     openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.FULFILLED;
+
     log.info("[handleLimitExecuted] Updated OpenLimitOrder {}", [
       openLimitOrderId,
     ]);
@@ -127,7 +130,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       index,
     });
     const tradeInfo = updateTradeInfoFromContractObject(
-      new TradeInfo(tradeInfoId),
+      createOrLoadTradeInfo(tradeInfoId, event.block),
       cTradeInfo,
       false
     );
@@ -168,6 +171,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     trade.positionSizeDai = positionSizeDai;
     trade.percentProfit = percentProfit;
     trade.closePrice = price;
+
     log.info("[handleLimitExecuted] Updated Trade {}", [trade.id]);
 
     // update state

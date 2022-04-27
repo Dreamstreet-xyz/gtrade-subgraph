@@ -1,9 +1,33 @@
+import { BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   LIMIT_ORDER_TYPE_IX,
   ZERO_ADDRESS,
+  PRICE_ORDER_STATUS,
 } from "../../../../helpers/constants";
 import { GFarmTradingStorageV5__reqID_pendingNftOrderResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
 import { NftOrder } from "../../../../types/schema";
+
+export function createOrLoadNftOrder(
+  id: string,
+  block: ethereum.Block
+): NftOrder {
+  let nftOrder = NftOrder.load(id);
+  if (!nftOrder) {
+    nftOrder = new NftOrder(id);
+    nftOrder.createdAtTimestamp = block.timestamp;
+    nftOrder.createdAtBlockNumber = block.number;
+    nftOrder.tokenId = -1;
+    nftOrder.status = PRICE_ORDER_STATUS.NONE;
+    nftOrder.price = BigInt.fromI32(0);
+    nftOrder.nftHolder = ZERO_ADDRESS;
+    nftOrder.nftId = -1;
+    nftOrder.price = BigInt.fromI32(0);
+    nftOrder.save();
+    log.info("[createOrLoadNftOrder] Created new NftOrder {}", [id]);
+  }
+
+  return nftOrder;
+}
 
 export function updateNftOrderFromContractObject(
   nftOrder: NftOrder,
@@ -18,7 +42,7 @@ export function updateNftOrderFromContractObject(
   const orderType = cNftOrder.value5;
 
   if (trader.toHexString() == ZERO_ADDRESS) {
-    throw Error("[updateNftOrderFromContractObject] No cNftOrder");
+    throw new Error("[updateNftOrderFromContractObject] No cNftOrder");
   }
 
   nftOrder.nftHolder = nftHolder.toHexString();

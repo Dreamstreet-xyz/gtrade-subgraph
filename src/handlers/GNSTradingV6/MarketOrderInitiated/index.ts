@@ -3,8 +3,11 @@ import {
   generateOrderId,
   addPendingMarketOrder,
   getOpenTradeId,
-  createTraderIfDne,
+  createOrLoadTrader,
   generateTradeId,
+  createOrLoadTradeInfo,
+  createOrLoadMarketOrder,
+  createOrLoadTrade,
 } from "../../../access/entity";
 import { getStorageContract } from "../../../access/contract";
 import {
@@ -47,7 +50,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     ]
   );
 
-  createTraderIfDne(trader);
+  createOrLoadTrader(trader, event.block);
 
   // read storage contract state for trade details
   const storage = getStorageContract();
@@ -79,7 +82,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     event.logIndex,
     orderId
   );
-  const marketOrder = new MarketOrder(marketOrderId);
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event.block);
   marketOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   marketOrder.block = block;
   marketOrder.wantedPrice = wantedPrice;
@@ -100,7 +103,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
       pairIndex,
       index: _trade.index,
     });
-    const trade = new Trade(tradeId);
+    const trade = createOrLoadTrade(tradeId, event.block);
     trade.status = TRADE_STATUS.OPENING;
     trade.trader = trader.toHexString();
     trade.type = TRADE_TYPE.MARKET_TRADE;
@@ -151,10 +154,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     // update trade info
     const tradeInfoId = trade.tradeInfo;
     if (tradeInfoId) {
-      let tradeInfo = TradeInfo.load(tradeInfoId);
-      if (!tradeInfo) {
-        tradeInfo = new TradeInfo(tradeInfoId);
-      }
+      const tradeInfo = createOrLoadTradeInfo(tradeInfoId, event.block);
       tradeInfo.beingMarketClosed = true;
       tradeInfo.save();
       log.info("[handleMarketOrderInitiated] Updated TradeInfo obj {}", [

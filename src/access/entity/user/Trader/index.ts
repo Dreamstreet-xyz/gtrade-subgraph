@@ -1,19 +1,20 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, ethereum, log } from "@graphprotocol/graph-ts";
 import { Trader } from "../../../../types/schema";
 
-export function getTraderOrCreate(address: Address): Trader {
-  return (
-    Trader.load(address.toHexString()) || new Trader(address.toHexString())
-  );
-}
-
-export function createTraderIfDne(address: Address): void {
-  const existing = Trader.load(address.toHexString());
-  if (!existing) {
-    const newTrader = new Trader(address.toHexString());
-    newTrader.save();
-    log.info("[createTraderIfDne] Created new Trader {}", [
+export function createOrLoadTrader(
+  address: Address,
+  block: ethereum.Block
+): Trader {
+  let trader = Trader.load(address.toHexString());
+  if (!trader) {
+    trader = new Trader(address.toHexString());
+    trader.createdAtTimestamp = block.timestamp;
+    trader.createdAtBlockNumber = block.number;
+    trader.save();
+    log.info("[createOrLoadTrader] Created new Trader {}", [
       address.toHexString(),
     ]);
   }
+
+  return trader;
 }

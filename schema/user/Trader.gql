@@ -11,6 +11,12 @@ type Trader @entity {
   "Total rewards of trader"
   referralRewardsTotal: BigInt
 
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
+
   "All trades"
   trades: [Trade!] @derivedFrom(field: "trader")
 }

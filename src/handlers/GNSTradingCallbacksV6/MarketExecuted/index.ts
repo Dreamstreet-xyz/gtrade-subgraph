@@ -7,6 +7,7 @@ import {
   updateTradeFromContractObject,
   addOpenTrade,
   addOpenTradeInfo,
+  createOrLoadTradeInfo,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -84,7 +85,7 @@ export function handleMarketExecuted(event: MarketExecuted): void {
       index,
     });
     const tradeInfo = updateTradeInfoFromContractObject(
-      new TradeInfo(tradeInfoId),
+      createOrLoadTradeInfo(tradeInfoId, event.block),
       cTradeInfo,
       false
     );
@@ -112,10 +113,7 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     // update trade info
     const tradeInfoId = trade.tradeInfo;
     if (tradeInfoId) {
-      let tradeInfo = TradeInfo.load(tradeInfoId);
-      if (!tradeInfo) {
-        tradeInfo = new TradeInfo(tradeInfoId);
-      }
+      const tradeInfo = createOrLoadTradeInfo(tradeInfoId, event.block);
       tradeInfo.beingMarketClosed = false;
       tradeInfo.save();
       log.info("[handleMarketOrderInitiated] Updated TradeInfo obj {}", [

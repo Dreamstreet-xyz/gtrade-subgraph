@@ -14,8 +14,14 @@ type SlUpdateOrder implements PriceOrder @entity {
   tokenId: Int
 
   "Received order price"
-  price: BigInt
+  price: BigInt!
 
   "Requested updated SL of trade"
-  newSl: BigInt
+  newSl: BigInt!
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }

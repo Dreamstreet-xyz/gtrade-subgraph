@@ -30,4 +30,10 @@ interface PriceOrder {
 
   "Received order price"
   price: BigInt
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }

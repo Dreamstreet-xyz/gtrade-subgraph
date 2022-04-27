@@ -7,6 +7,7 @@ import {
   generateOrderId,
   getOpenTradeId,
   updateTradeFromContractObject,
+  createOrLoadSlUpdateOrder,
 } from "../../../access/entity";
 import {
   PRICE_ORDER_STATUS,
@@ -74,7 +75,7 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
     event.logIndex,
     orderId
   );
-  const slUpdateOrder = new SlUpdateOrder(slUpdateOrderId);
+  const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event.block);
   slUpdateOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   slUpdateOrder.trade = trade.id;
   slUpdateOrder.type = PRICE_ORDER_TYPE.UPDATE_SL;

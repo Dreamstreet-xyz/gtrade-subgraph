@@ -57,6 +57,10 @@ type Trade @entity {
   openLimitOrder: OpenLimitOrder
   "Percent profit of trade"
   percentProfit: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
   "NFT order details"
   nftOrders: [NftOrder!]! @derivedFrom(field: "trade")
   "Market order details"
@@ -72,11 +76,19 @@ type TradeInfo @entity {
   tpLastUpdated: BigInt
   slLastUpdated: BigInt
   beingMarketClosed: Boolean
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
 
 type NftHolder @entity {
   "Address of NFT holder"
   id: ID!
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
   orders: [NftOrder!] @derivedFrom(field: "nftHolder")
 }
 
@@ -89,6 +101,10 @@ type Trader @entity {
   leverageUnlocked: Int
   "Total rewards of trader"
   referralRewardsTotal: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
   "All trades"
   trades: [Trade!] @derivedFrom(field: "trader")
 }
@@ -125,6 +141,10 @@ type OpenLimitOrder @entity {
   tokenId: Int
   "Executing order"
   nftOrder: NftOrder
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
 
 type MarketOrder implements PriceOrder @entity {
@@ -147,6 +167,10 @@ type MarketOrder implements PriceOrder @entity {
   spreadReductionP: BigInt!
   "Received order price"
   price: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
 
 enum LimitOrderType {
@@ -174,6 +198,10 @@ type NftOrder implements PriceOrder @entity {
   nftId: Int!
   "Received order price"
   price: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
 
 enum PriceOrderStatus {
@@ -203,6 +231,10 @@ interface PriceOrder {
   tokenId: Int
   "Received order price"
   price: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
 
 type SlUpdateOrder implements PriceOrder @entity {
@@ -219,4 +251,8 @@ type SlUpdateOrder implements PriceOrder @entity {
   price: BigInt
   "Requested updated SL of trade"
   newSl: BigInt
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }

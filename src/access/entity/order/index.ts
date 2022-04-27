@@ -15,5 +15,13 @@ export function generateOrderId(
   return tx.hash.toHexString() + "-" + logIndex.toString() + id.toString();
 }
 
-export { updateNftOrderFromContractObject } from "./NftOrder";
-export { updateOpenLimitOrderFromContractObject } from "./OpenLimitOrder";
+export {
+  createOrLoadNftOrder,
+  updateNftOrderFromContractObject,
+} from "./NftOrder";
+export {
+  createOrLoadOpenLimitOrder,
+  updateOpenLimitOrderFromContractObject,
+} from "./OpenLimitOrder";
+export { createOrLoadMarketOrder } from "./MarketOrder";
+export { createOrLoadSlUpdateOrder } from "./SlUpdateOrder";

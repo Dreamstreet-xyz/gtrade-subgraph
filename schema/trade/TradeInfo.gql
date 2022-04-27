@@ -7,4 +7,10 @@ type TradeInfo @entity {
   tpLastUpdated: BigInt
   slLastUpdated: BigInt
   beingMarketClosed: Boolean
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }

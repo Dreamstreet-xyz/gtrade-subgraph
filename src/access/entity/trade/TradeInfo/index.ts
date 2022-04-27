@@ -2,6 +2,29 @@ import { Address, ethereum, BigInt, log } from "@graphprotocol/graph-ts";
 import { GFarmTradingStorageV5__openTradesInfoResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
 import { TradeInfo } from "../../../../types/schema";
 import { TradeTuple, generateIdFromTradeTuple } from "../Trade";
+
+export function createOrLoadTradeInfo(
+  id: string,
+  block: ethereum.Block
+): TradeInfo {
+  let tradeInfo = TradeInfo.load(id);
+  if (!tradeInfo) {
+    tradeInfo = new TradeInfo(id);
+    tradeInfo.createdAtTimestamp = block.timestamp;
+    tradeInfo.createdAtBlockNumber = block.number;
+    tradeInfo.tokenId = -1;
+    tradeInfo.tokenPriceDai = BigInt.fromI32(0);
+    tradeInfo.openInterestDai = BigInt.fromI32(0);
+    tradeInfo.tpLastUpdated = BigInt.fromI32(0);
+    tradeInfo.slLastUpdated = BigInt.fromI32(0);
+    tradeInfo.beingMarketClosed = false;
+    tradeInfo.save();
+    log.info("[createOrLoadTradeInfo] Created new TradeInfo {}", [id]);
+  }
+
+  return tradeInfo;
+}
+
 /**
  * Generate a deterministic id for a given trade event
  * @param tx

@@ -22,6 +22,10 @@ export {
   generateOrderId,
   updateNftOrderFromContractObject,
   updateOpenLimitOrderFromContractObject,
+  createOrLoadMarketOrder,
+  createOrLoadSlUpdateOrder,
+  createOrLoadNftOrder,
+  createOrLoadOpenLimitOrder,
 } from "./order";
 export {
   generateTradeId,
@@ -29,11 +33,13 @@ export {
   generateIdFromTradeTuple,
   updateTradeFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
+  createOrLoadTrade,
 } from "./trade/Trade";
 export {
   generateTradeInfoId,
   updateTradeInfoFromContractObject,
+  createOrLoadTradeInfo,
 } from "./trade/TradeInfo";
-export { getNftHolderOrCreate, createNftHolderIfDne } from "./user/NftHolder";
-export { getTraderOrCreate, createTraderIfDne } from "./user/Trader";
+export { createOrLoadNftHolder } from "./user/NftHolder";
+export { createOrLoadTrader } from "./user/Trader";
 export { updateTradeAndTradeInfoToLatestFromTuple } from "./trade";

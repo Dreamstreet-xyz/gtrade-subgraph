@@ -2,5 +2,11 @@ type NftHolder @entity {
   "Address of NFT holder"
   id: ID!
 
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
+
   orders: [NftOrder!] @derivedFrom(field: "nftHolder")
 }

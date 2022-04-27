@@ -1,4 +1,5 @@
 enum OpenLimitOrderStatus {
+  NONE
   OPEN
   CANCELED
   FULFILLED
@@ -18,7 +19,7 @@ type OpenLimitOrder @entity {
   type: OpenLimitOrderType
 
   "Status of open limit order"
-  status: OpenLimitOrderStatus
+  status: OpenLimitOrderStatus!
 
   "Trade associated with open limit order"
   trade: Trade!
@@ -39,4 +40,10 @@ type OpenLimitOrder @entity {
 
   "Executing order"
   nftOrder: NftOrder
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }

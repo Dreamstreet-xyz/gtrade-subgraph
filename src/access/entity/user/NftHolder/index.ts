@@ -1,20 +1,20 @@
-import { Address, log } from "@graphprotocol/graph-ts";
+import { Address, ethereum, log } from "@graphprotocol/graph-ts";
 import { NftHolder } from "../../../../types/schema";
 
-export function getNftHolderOrCreate(address: Address): NftHolder {
-  return (
-    NftHolder.load(address.toHexString()) ||
-    new NftHolder(address.toHexString())
-  );
-}
-
-export function createNftHolderIfDne(address: Address): void {
-  const existing = NftHolder.load(address.toHexString());
-  if (!existing) {
-    const newNftHolder = new NftHolder(address.toHexString());
-    newNftHolder.save();
-    log.info("[createNftHolderIfDne] Created new NftHolder {}", [
+export function createOrLoadNftHolder(
+  address: Address,
+  block: ethereum.Block
+): NftHolder {
+  let holder = NftHolder.load(address.toHexString());
+  if (!holder) {
+    holder = new NftHolder(address.toHexString());
+    holder.createdAtTimestamp = block.timestamp;
+    holder.createdAtBlockNumber = block.number;
+    holder.save();
+    log.info("[createOrLoadNftHolder] Created new NftHolder {}", [
       address.toHexString(),
     ]);
   }
+
+  return holder;
 }

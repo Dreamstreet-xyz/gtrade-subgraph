@@ -101,3 +101,8 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   marketOrder.save();
   trade.save();
 }
+
+function save<T>(entity: T): T {
+  entity.save();
+  return entity;
+}

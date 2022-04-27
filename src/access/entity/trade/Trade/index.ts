@@ -1,5 +1,5 @@
 import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
-import { ZERO_ADDRESS } from "../../../../helpers/constants";
+import { TRADE_STATUS, ZERO_ADDRESS } from "../../../../helpers/constants";
 import {
   GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   GFarmTradingStorageV5__openTradesResult,
@@ -46,6 +46,29 @@ export function generateIdFromRawTradeTuple(
 
 export function generateIdFromTradeTuple(tradeTuple: TradeTuple): string {
   return `${tradeTuple.trader.toHexString()}-${tradeTuple.pairIndex.toString()}-${tradeTuple.index.toString()}`;
+}
+
+export function createOrLoadTrade(id: string, block: ethereum.Block): Trade {
+  let trade = Trade.load(id);
+  if (trade == null) {
+    trade = new Trade(id);
+    trade.createdAtBlockNumber = block.number;
+    trade.createdAtTimestamp = block.timestamp;
+    trade.status = TRADE_STATUS.NONE;
+    trade.trader = ZERO_ADDRESS;
+    trade.pairIndex = -1;
+    trade.index = -1;
+    trade.initialPosToken = BigInt.fromI32(0);
+    trade.positionSizeDai = BigInt.fromI32(0);
+    trade.openPrice = BigInt.fromI32(0);
+    trade.closePrice = BigInt.fromI32(0);
+    trade.buy = false;
+    trade.leverage = 0;
+    trade.tp = BigInt.fromI32(0);
+    trade.sl = BigInt.fromI32(0);
+    trade.save();
+  }
+  return trade as Trade;
 }
 
 export function updateTradeFromContractObject(

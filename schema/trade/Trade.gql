@@ -1,4 +1,5 @@
 enum TradeStatus {
+  NONE
   LIMIT_ORDER_PENDING
   LIMIT_ORDER_CANCELED
   OPENING
@@ -29,34 +30,34 @@ type Trade @entity {
   type: TradeType
 
   "Index of asset being traded"
-  pairIndex: Int
+  pairIndex: Int!
 
   "Index of asset specific trades open for trader"
-  index: Int
+  index: Int!
 
   "Position size in number of asset tokens at opening price"
-  initialPosToken: BigInt
+  initialPosToken: BigInt!
 
   "Position size in DAI"
-  positionSizeDai: BigInt
+  positionSizeDai: BigInt!
 
   "Asset price at open"
-  openPrice: BigInt
+  openPrice: BigInt!
 
   "Asset price at close"
-  closePrice: BigInt
+  closePrice: BigInt!
 
   "Direction of trade - true for long, false for short"
   buy: Boolean!
 
   "Leverage of trade"
-  leverage: Int
+  leverage: Int!
 
   "Asset price of take profit"
-  tp: BigInt
+  tp: BigInt!
 
   "Asset price of stop loss"
-  sl: BigInt
+  sl: BigInt!
 
   "Trade metadata"
   tradeInfo: TradeInfo
@@ -66,6 +67,12 @@ type Trade @entity {
 
   "Percent profit of trade"
   percentProfit: BigInt
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 
   "NFT order details"
   nftOrders: [NftOrder!]! @derivedFrom(field: "trade")

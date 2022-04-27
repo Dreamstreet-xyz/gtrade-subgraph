@@ -5,7 +5,9 @@ import {
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
   addOpenLimitOrder,
-  createTraderIfDne,
+  createOrLoadTrader,
+  createOrLoadTrade,
+  createOrLoadOpenLimitOrder,
 } from "../../../access/entity";
 import { getStorageContract } from "../../../access/contract";
 import {
@@ -41,7 +43,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     index.toString(),
   ]);
 
-  createTraderIfDne(trader);
+  createOrLoadTrader(trader, event.block);
 
   // read storage contract state for trade details
   const storage = getStorageContract();
@@ -64,7 +66,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     cOpenLimitOrderId
   );
   const openLimitOrder = updateOpenLimitOrderFromContractObject(
-    new OpenLimitOrder(openLimitOrderId),
+    createOrLoadOpenLimitOrder(openLimitOrderId, event.block),
     cOpenLimitOrder,
     false
   );
@@ -95,7 +97,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     index,
   });
   const trade = updateTradeFromOpenLimitOrderContractObject(
-    new Trade(tradeId),
+    createOrLoadTrade(tradeId, event.block),
     cOpenLimitOrder,
     false
   );

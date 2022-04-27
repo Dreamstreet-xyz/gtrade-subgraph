@@ -5,6 +5,7 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 export let BIGINT_ZERO = BigInt.fromI32(0);
 export let BIGINT_ONE = BigInt.fromI32(1);
 
+export const NONE_STATUS = "NONE";
 export const LIMIT_ORDER_PENDING = "LIMIT_ORDER_PENDING";
 export const OPENING = "OPENING";
 export const OPEN = "OPEN";
@@ -15,6 +16,7 @@ export const CLOSE_TIMED_OUT = "CLOSE_TIMED_OUT";
 export const CLOSED = "CLOSED";
 
 class TradeStatus {
+  NONE!: string;
   OPENING!: string;
   LIMIT_ORDER_PENDING!: string;
   OPEN!: string;
@@ -26,6 +28,7 @@ class TradeStatus {
 }
 
 export const TRADE_STATUS: TradeStatus = {
+  NONE: NONE_STATUS,
   OPENING,
   LIMIT_ORDER_PENDING,
   OPEN,
@@ -102,6 +105,7 @@ export const LIMIT_ORDER_TYPE_IX = [
 ];
 
 class OpenLimitOrderStatus {
+  NONE!: string;
   OPEN!: string;
   CANCELED!: string;
   FULFILLING!: string;
@@ -109,8 +113,9 @@ class OpenLimitOrderStatus {
 }
 
 export const OPEN_LIMIT_ORDER_STATUS: OpenLimitOrderStatus = {
-  OPEN: "OPEN",
-  CANCELED: "CANCELED",
+  NONE: NONE_STATUS,
+  OPEN,
+  CANCELED,
   FULFILLING: "FULFILLING",
   FULFILLED: "FULFILLED",
 };

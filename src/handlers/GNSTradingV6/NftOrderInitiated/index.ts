@@ -7,8 +7,9 @@ import {
   updateNftOrderFromContractObject,
   getOpenLimitOrderId,
   addPendingNftOrder,
-  createNftHolderIfDne,
+  createOrLoadNftHolder,
   getOpenTradeId,
+  createOrLoadNftOrder,
 } from "../../../access/entity";
 import {
   TRADE_STATUS,
@@ -65,7 +66,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   const aggregator = getPriceAggregatorContract();
 
   // create NftHolder if dne
-  createNftHolderIfDne(nftHolder);
+  createOrLoadNftHolder(nftHolder, event.block);
 
   // fetch pending order and construct NftOrder
   const cPendingNftOrder = storage.reqID_pendingNftOrder(orderId);
@@ -75,7 +76,10 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   );
 
   const nftOrder = updateNftOrderFromContractObject(
-    new NftOrder(generateOrderId(event.transaction, event.logIndex, orderId)),
+    createOrLoadNftOrder(
+      generateOrderId(event.transaction, event.logIndex, orderId),
+      event.block
+    ),
     cPendingNftOrder,
     false
   );

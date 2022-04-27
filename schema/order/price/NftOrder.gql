@@ -30,5 +30,11 @@ type NftOrder implements PriceOrder @entity {
   nftId: Int!
 
   "Received order price"
-  price: BigInt
+  price: BigInt!
+
+  "Created timestamp"
+  createdAtTimestamp: BigInt!
+
+  "Created block number"
+  createdAtBlockNumber: BigInt!
 }
