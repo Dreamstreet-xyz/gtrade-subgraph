@@ -12,6 +12,7 @@ export function createOrLoadMarketOrder(
     marketOrder.createdAtTimestamp = event.block.timestamp;
     marketOrder.createdAtBlockNumber = event.block.number;
     marketOrder.transactions = [event.transaction.hash.toHexString()];
+    marketOrder.blocks = [event.block.number];
     marketOrder.tokenId = -1;
     marketOrder.status = PRICE_ORDER_STATUS.NONE;
     marketOrder.wantedPrice = BigInt.fromI32(0);
@@ -24,6 +25,10 @@ export function createOrLoadMarketOrder(
     const txs = marketOrder.transactions;
     txs.push(event.transaction.hash.toHexString());
     marketOrder.transactions = txs;
+
+    const blocks = marketOrder.blocks;
+    blocks.push(event.block.number);
+    marketOrder.blocks = blocks;
   }
 
   return marketOrder;

@@ -12,6 +12,7 @@ export function createOrLoadSlUpdateOrder(
     slUpdateOrder.createdAtTimestamp = event.block.timestamp;
     slUpdateOrder.createdAtBlockNumber = event.block.number;
     slUpdateOrder.transactions = [event.transaction.hash.toHexString()];
+    slUpdateOrder.blocks = [event.block.number];
     slUpdateOrder.tokenId = -1;
     slUpdateOrder.status = PRICE_ORDER_STATUS.NONE;
     slUpdateOrder.price = BigInt.fromI32(0);
@@ -22,7 +23,10 @@ export function createOrLoadSlUpdateOrder(
     const txs = slUpdateOrder.transactions;
     txs.push(event.transaction.hash.toHexString());
     slUpdateOrder.transactions = txs;
-    slUpdateOrder.save();
+
+    const blocks = slUpdateOrder.blocks;
+    blocks.push(event.block.number);
+    slUpdateOrder.blocks = blocks;
   }
 
   return slUpdateOrder;

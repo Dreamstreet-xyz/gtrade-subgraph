@@ -36,4 +36,7 @@ type MarketOrder implements PriceOrder @entity {
 
   "Order-related transactions"
   transactions: [String!]!
+
+  "Order-related blocks"
+  blocks: [BigInt!]!
 }

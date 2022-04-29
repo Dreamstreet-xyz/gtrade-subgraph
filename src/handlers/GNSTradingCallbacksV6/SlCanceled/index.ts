@@ -34,9 +34,6 @@ export function handleSlCanceled(event: SlCanceled): void {
   }
   const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event);
   slUpdateOrder.status = PRICE_ORDER_STATUS.RECEIVED;
-  const txs = slUpdateOrder.transactions;
-  txs.push(event.transaction.hash.toHexString());
-  slUpdateOrder.transactions = txs;
   log.info("[handleSlCanceled] Updated SlUpdateOrder {}", [slUpdateOrderId]);
 
   // update state

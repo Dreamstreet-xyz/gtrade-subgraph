@@ -62,10 +62,12 @@ export function transitionTradeToClose(
   const receivedBigInt = BigInt.fromString(received);
   trade.pnl = receivedBigInt.minus(trade.positionSizeDai);
   if (percentProfit) {
-    trade.closeFeeDai = receivedBigInt.minus(
-      trade.positionSizeDai.plus(
-        trade.positionSizeDai.times(percentProfit).div(BigInt.fromI32(100))
-      )
+    trade.closeFeeDai = trade.positionSizeDai.plus(
+      trade.positionSizeDai
+        .times(percentProfit)
+        .div(BigInt.fromI64(i64(1e10)))
+        .div(BigInt.fromI32(100))
+        .minus(receivedBigInt)
     );
   }
 

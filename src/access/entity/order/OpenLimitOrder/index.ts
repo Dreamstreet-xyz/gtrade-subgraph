@@ -16,6 +16,7 @@ export function createOrLoadOpenLimitOrder(
     openLimitOrder.createdAtTimestamp = event.block.timestamp;
     openLimitOrder.createdAtBlockNumber = event.block.number;
     openLimitOrder.transactions = [event.transaction.hash.toHexString()];
+    openLimitOrder.blocks = [event.block.number];
     openLimitOrder.tokenId = -1;
     openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.NONE;
     openLimitOrder.minPrice = BigInt.fromI32(0);
@@ -30,7 +31,10 @@ export function createOrLoadOpenLimitOrder(
     const txs = openLimitOrder.transactions;
     txs.push(event.transaction.hash.toHexString());
     openLimitOrder.transactions = txs;
-    openLimitOrder.save();
+
+    const blocks = openLimitOrder.blocks;
+    blocks.push(event.block.number);
+    openLimitOrder.blocks = blocks;
   }
 
   return openLimitOrder;

@@ -17,6 +17,7 @@ export function createOrLoadNftOrder(
     nftOrder.createdAtTimestamp = event.block.timestamp;
     nftOrder.createdAtBlockNumber = event.block.number;
     nftOrder.transactions = [event.transaction.hash.toHexString()];
+    nftOrder.blocks = [event.block.number];
     nftOrder.tokenId = -1;
     nftOrder.status = PRICE_ORDER_STATUS.NONE;
     nftOrder.price = BigInt.fromI32(0);
@@ -29,7 +30,10 @@ export function createOrLoadNftOrder(
     const txs = nftOrder.transactions;
     txs.push(event.transaction.hash.toHexString());
     nftOrder.transactions = txs;
-    nftOrder.save();
+
+    const blocks = nftOrder.blocks;
+    blocks.push(event.block.number);
+    nftOrder.blocks = blocks;
   }
 
   return nftOrder;
