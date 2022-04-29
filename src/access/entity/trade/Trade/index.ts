@@ -58,19 +58,27 @@ export function createOrLoadTrade(id: string, block: ethereum.Block): Trade {
     trade.trader = ZERO_ADDRESS;
     trade.pairIndex = -1;
     trade.index = -1;
-    trade.initialPosToken = BigInt.fromI32(0);
-    trade.positionSizeDai = BigInt.fromI32(0);
-    trade.openPrice = BigInt.fromI32(0);
-    trade.closePrice = BigInt.fromI32(0);
+    trade.initialPosToken = BigInt.fromI32(-1);
+    trade.positionSizeDai = BigInt.fromI32(-1);
+    trade.openPrice = BigInt.fromI32(-1);
+    trade.closePrice = BigInt.fromI32(-1);
     trade.buy = false;
     trade.leverage = 0;
-    trade.tp = BigInt.fromI32(0);
-    trade.sl = BigInt.fromI32(0);
+    trade.tp = BigInt.fromI32(-1);
+    trade.sl = BigInt.fromI32(-1);
     trade.save();
   }
   return trade as Trade;
 }
 
+/**
+ * Takes Trade entity and openTrade contract objects and updates the entity.
+ *
+ * @param trade
+ * @param cTrade
+ * @param save
+ * @returns
+ */
 export function updateTradeFromContractObject(
   trade: Trade,
   cTrade: GFarmTradingStorageV5__openTradesResult,
@@ -80,7 +88,7 @@ export function updateTradeFromContractObject(
   const pairIndex = cTrade.value1;
   const index = cTrade.value2;
   const initialPosToken = cTrade.value3;
-  const positionSizeDai = cTrade.value4;
+  // const positionSizeDai = cTrade.value4;
   const openPrice = cTrade.value5;
   const buy = cTrade.value6;
   const leverage = cTrade.value7;
@@ -88,14 +96,14 @@ export function updateTradeFromContractObject(
   const sl = cTrade.value9;
 
   if (trader.toHexString() == ZERO_ADDRESS) {
-    throw Error("[updateTradeFromContractObject] No trade");
+    throw new Error("[updateTradeFromContractObject] No trade");
   }
 
   trade.trader = trader.toHexString();
   trade.pairIndex = pairIndex.toI32();
   trade.index = index.toI32();
   trade.initialPosToken = initialPosToken;
-  trade.positionSizeDai = positionSizeDai;
+  // trade.positionSizeDai = positionSizeDai;
   trade.openPrice = openPrice;
   trade.buy = buy;
   trade.leverage = leverage.toI32();
@@ -127,3 +135,5 @@ export function updateTradeFromOpenLimitOrderContractObject(
 
   return trade;
 }
+
+export { transitionTradeToOpen, transitionTradeToClose } from "./transition";

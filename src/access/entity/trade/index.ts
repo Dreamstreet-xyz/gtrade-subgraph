@@ -27,7 +27,9 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] Trade {} not found for tuple {}",
       [tradeId, stringifyTuple(tuple)]
     );
-    throw Error("[updateTradeAndTradeInfoToLatestFromTuple] Trade not found");
+    throw new Error(
+      "[updateTradeAndTradeInfoToLatestFromTuple] Trade not found"
+    );
   }
   const cTrade = storage.openTrades(tuple.trader, tuple.pairIndex, tuple.index);
   trade = updateTradeFromContractObject(trade, cTrade, false);
@@ -40,7 +42,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo {} not found for tuple {}",
       [tradeInfoId, stringifyTuple(tuple)]
     );
-    throw Error(
+    throw new Error(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo not found"
     );
   }

@@ -12,6 +12,8 @@ import {
   updateTradeFromContractObject,
   updateTradeInfoFromContractObject,
   createOrLoadTradeInfo,
+  transitionTradeToOpen,
+  transitionTradeToClose,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -116,8 +118,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     }
     const cTrade = storage.openTrades(trader, pairIndex, index);
     trade = updateTradeFromContractObject(trade, cTrade, false);
-    trade.status = TRADE_STATUS.OPEN;
-    trade.openPrice = price;
+    trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info(
       "[handleLimitExecuted] Fetched openTrades from contract and updated Trade obj {}",
       [trade.id]
@@ -159,7 +160,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     ]);
     // close Trade
     // update Trade
-    const trade = Trade.load(nftOrder.trade);
+    let trade = Trade.load(nftOrder.trade);
     if (!trade) {
       log.error("[handleLimitExecuted] Trade {} not found for NftOrder {}", [
         nftOrder.trade,
@@ -167,12 +168,15 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       ]);
       return;
     }
-    trade.status = TRADE_STATUS.CLOSED;
-    trade.positionSizeDai = positionSizeDai;
-    trade.percentProfit = percentProfit;
-    trade.closePrice = price;
+    trade = transitionTradeToClose(
+      trade,
+      positionSizeDai,
+      price,
+      event.transaction,
+      false
+    );
 
-    log.info("[handleLimitExecuted] Updated Trade {}", [trade.id]);
+    log.info("[handleLimitExecuted] Updated Trade {} to CLOSED", [trade.id]);
 
     // update state
     removeOpenTrade(tuple);

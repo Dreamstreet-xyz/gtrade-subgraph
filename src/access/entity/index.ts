@@ -17,6 +17,12 @@ export {
   getPendingSlUpdateOrderId,
   addPendingSlUpdateOrder,
   removePendingSlUpdateOrder,
+  getSentAmount,
+  addSentLookup,
+  removeSentLookup,
+  getToClaimAmount,
+  addToClaimLookup,
+  removeToClaimLookup,
 } from "./trade/ContractIdMapping";
 export {
   generateOrderId,
@@ -34,6 +40,8 @@ export {
   updateTradeFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
   createOrLoadTrade,
+  transitionTradeToOpen,
+  transitionTradeToClose,
 } from "./trade/Trade";
 export {
   generateTradeInfoId,

@@ -36,6 +36,8 @@ dataSources:
           file: ./abis/GNSPriceAggregatorV6.json
         - name: GNSNftRewardsV6
           file: ./abis/GNSNftRewardsV6.json
+        - name: GNSTradingVaultV5
+          file: ./abis/GNSTradingVaultV5.json
       eventHandlers:
         - event: ChainlinkCallbackTimeout(uint256,((address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),uint256,uint256,uint256,uint256,uint256))
           handler: handleChainlinkCallbackTimeout
@@ -85,6 +87,8 @@ dataSources:
           file: ./abis/GNSPriceAggregatorV6.json
         - name: GNSNftRewardsV6
           file: ./abis/GNSNftRewardsV6.json
+        - name: GNSTradingVaultV5
+          file: ./abis/GNSTradingVaultV5.json
       eventHandlers:
         - event: LimitExecuted(uint256,uint256,(address,uint256,uint256,uint256,uint256,uint256,bool,uint256,uint256,uint256),address,uint8,uint256,uint256,int256)
           handler: handleLimitExecuted
@@ -99,3 +103,36 @@ dataSources:
         - event: SlUpdated(uint256,address,uint256,uint256,uint256)
           handler: handleSlUpdated
       file: ./src/handlers/GNSTradingCallbacksV6/index.ts
+  - kind: ethereum
+    name: GNSTradingVaultV5
+    network: '{{network}}'
+    source:
+      address: '{{gnsTradingVaultV5.address}}'
+      abi: GNSTradingVaultV5
+      startBlock: {{gnsTradingVaultV5.startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - Sent
+        - ToClaim
+      abis:
+        - name: GNSTradingCallbacksV6
+          file: ./abis/GNSTradingCallbacksV6.json
+        - name: GNSTradingV6
+          file: ./abis/GNSTradingV6.json
+        - name: GFarmTradingStorageV5
+          file: ./abis/GFarmTradingStorageV5.json
+        - name: GNSPriceAggregatorV6
+          file: ./abis/GNSPriceAggregatorV6.json
+        - name: GNSNftRewardsV6
+          file: ./abis/GNSNftRewardsV6.json
+        - name: GNSTradingVaultV5
+          file: ./abis/GNSTradingVaultV5.json
+      eventHandlers:
+        - event: Sent(address,address,uint256,uint256,uint256)
+          handler: handleSent
+        - event: ToClaim(address,address,uint256,uint256,uint256)
+          handler: handleToClaim
+      file: ./src/handlers/GNSTradingVaultV5/index.ts

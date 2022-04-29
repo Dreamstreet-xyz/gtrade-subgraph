@@ -44,8 +44,20 @@ type Trade @entity {
   "Asset price at open"
   openPrice: BigInt!
 
+  "Trade fee on open"
+  openFeeDai: BigInt!
+
   "Asset price at close"
   closePrice: BigInt!
+
+  "Trade fee on close"
+  closeFeeDai: BigInt!
+
+  "Percent profit of trade"
+  percentProfit: BigInt
+
+  "Profits and losses of trade"
+  pnl: BigInt!
 
   "Direction of trade - true for long, false for short"
   buy: Boolean!
@@ -64,9 +76,6 @@ type Trade @entity {
 
   "Open limit order details"
   openLimitOrder: OpenLimitOrder
-
-  "Percent profit of trade"
-  percentProfit: BigInt
 
   "Created timestamp"
   createdAtTimestamp: BigInt!

@@ -70,3 +70,11 @@ export {
   addPendingSlUpdateOrder,
   removePendingSlUpdateOrder,
 } from "./pendingSlUpdateOrdersLookup";
+
+export { getSentAmount, addSentLookup, removeSentLookup } from "./sentLookup";
+
+export {
+  getToClaimAmount,
+  addToClaimLookup,
+  removeToClaimLookup,
+} from "./toClaimLookup";

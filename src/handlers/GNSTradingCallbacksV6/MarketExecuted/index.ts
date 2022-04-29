@@ -8,6 +8,8 @@ import {
   addOpenTrade,
   addOpenTradeInfo,
   createOrLoadTradeInfo,
+  transitionTradeToOpen,
+  transitionTradeToClose,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -75,7 +77,7 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     // should be able to use 't' from event but for certainty, reading state
     const cTrade = storage.openTrades(trader, pairIndex, index);
     trade = updateTradeFromContractObject(trade, cTrade, false);
-    trade.status = TRADE_STATUS.OPEN;
+    trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info("[handleMarketExecuted] Updated Trade {} to OPEN", [trade.id]);
 
     const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
@@ -105,9 +107,14 @@ export function handleMarketExecuted(event: MarketExecuted): void {
     // save
     tradeInfo.save();
   } else {
-    trade.status = TRADE_STATUS.CLOSED;
-    trade.percentProfit = percentProfit;
-    trade.closePrice = price;
+    // transition to close and handle closing calculations
+    trade = transitionTradeToClose(
+      trade,
+      percentProfit,
+      price,
+      event.transaction,
+      false
+    );
     log.info("[handleMarketExecuted] Updated Trade {} to CLOSED", [trade.id]);
 
     // update trade info
