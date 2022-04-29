@@ -4,6 +4,7 @@ import {
   getPendingMarketOrderId,
   updateTradeFromContractObject,
   removePendingMarketOrder,
+  createOrLoadMarketOrder,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -48,14 +49,15 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
 
   // update MarketOrder
   const marketOrderId = getPendingMarketOrderId(orderId.toString());
-  const marketOrder = MarketOrder.load(marketOrderId);
-  if (!marketOrder) {
+  if (!marketOrderId) {
     log.error(
-      "[handleMarketCloseCanceled] MarketOrder {} not found for orderId {}",
-      [marketOrderId, orderId.toString()]
+      "[handleMarketOpenCanceled] MarketOrder for OrderId {} not found in state",
+      [orderId.toString()]
     );
     return;
   }
+
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event);
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   marketOrder.price = price;
   log.info("[handleMarketCloseCanceled] Updated MarketOrder {}", [

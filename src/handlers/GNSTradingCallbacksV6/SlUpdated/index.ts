@@ -2,6 +2,7 @@ import { log } from "@graphprotocol/graph-ts";
 import { stringifyTuple, TradeTuple } from "../../../access/entity/trade/Trade";
 import { getStorageContract } from "../../../access/contract";
 import {
+  createOrLoadSlUpdateOrder,
   getPendingSlUpdateOrderId,
   removePendingSlUpdateOrder,
   updateTradeAndTradeInfoToLatestFromTuple,
@@ -46,14 +47,14 @@ export function handleSlUpdated(event: SlUpdated): void {
 
   // update SlUpdateOrder
   const slUpdateOrderId = getPendingSlUpdateOrderId(orderId.toString());
-  const slUpdateOrder = SlUpdateOrder.load(slUpdateOrderId);
-  if (!slUpdateOrder) {
-    log.error("[handleSlUpdated] SlUpdateOrder {} not found for orderId {}", [
-      slUpdateOrderId,
-      orderId.toString(),
-    ]);
+  if (!slUpdateOrderId) {
+    log.error(
+      "[handleSlUpdated] SlUpdateOrder for OrderId {} not found in state",
+      [orderId.toString()]
+    );
     return;
   }
+  const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event);
   slUpdateOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   log.info("[handleSlUpdated] Updated SlUpdateOrder {}", [slUpdateOrderId]);
 

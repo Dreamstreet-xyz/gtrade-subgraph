@@ -10,6 +10,7 @@ import {
   createOrLoadNftHolder,
   getOpenTradeId,
   createOrLoadNftOrder,
+  createOrLoadOpenLimitOrder,
 } from "../../../access/entity";
 import {
   TRADE_STATUS,
@@ -78,7 +79,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   const nftOrder = updateNftOrderFromContractObject(
     createOrLoadNftOrder(
       generateOrderId(event.transaction, event.logIndex, orderId),
-      event.block
+      event
     ),
     cPendingNftOrder,
     false
@@ -102,14 +103,14 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
       pairIndex,
       index,
     });
-    const openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
-    if (!openLimitOrder) {
+    if (!openLimitOrderId) {
       log.error(
-        "[handleNftOrderInitiated] OpenLimitOrder not found for openLimitOrderId {} / {}",
-        [openLimitOrderId, stringifyTuple({ trader, pairIndex, index })]
+        "[handleOpenLimitCanceled] OpenLimitOrder for tuple {} not found in state",
+        [stringifyTuple({ trader, pairIndex, index })]
       );
       return;
     }
+    const openLimitOrder = createOrLoadOpenLimitOrder(openLimitOrderId, event);
     openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.FULFILLING;
 
     tradeId = openLimitOrder.trade;

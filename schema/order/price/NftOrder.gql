@@ -37,4 +37,7 @@ type NftOrder implements PriceOrder @entity {
 
   "Created block number"
   createdAtBlockNumber: BigInt!
+
+  "Order-related transactions"
+  transactions: [String!]!
 }

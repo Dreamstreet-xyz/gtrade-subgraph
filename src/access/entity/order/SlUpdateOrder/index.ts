@@ -4,19 +4,25 @@ import { SlUpdateOrder } from "../../../../types/schema";
 
 export function createOrLoadSlUpdateOrder(
   id: string,
-  block: ethereum.Block
+  event: ethereum.Event
 ): SlUpdateOrder {
   let slUpdateOrder = SlUpdateOrder.load(id);
   if (!slUpdateOrder) {
     slUpdateOrder = new SlUpdateOrder(id);
-    slUpdateOrder.createdAtTimestamp = block.timestamp;
-    slUpdateOrder.createdAtBlockNumber = block.number;
+    slUpdateOrder.createdAtTimestamp = event.block.timestamp;
+    slUpdateOrder.createdAtBlockNumber = event.block.number;
+    slUpdateOrder.transactions = [event.transaction.hash.toHexString()];
     slUpdateOrder.tokenId = -1;
     slUpdateOrder.status = PRICE_ORDER_STATUS.NONE;
     slUpdateOrder.price = BigInt.fromI32(0);
     slUpdateOrder.newSl = BigInt.fromI32(0);
     slUpdateOrder.save();
     log.info("[createOrLoadSlUpdateOrder] Created new SlUpdateOrder {}", [id]);
+  } else {
+    const txs = slUpdateOrder.transactions;
+    txs.push(event.transaction.hash.toHexString());
+    slUpdateOrder.transactions = txs;
+    slUpdateOrder.save();
   }
 
   return slUpdateOrder;

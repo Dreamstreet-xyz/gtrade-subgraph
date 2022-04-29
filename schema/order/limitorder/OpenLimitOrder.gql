@@ -47,4 +47,7 @@ type OpenLimitOrder @entity {
 
   "Created block number"
   createdAtBlockNumber: BigInt!
+
+  "Order-related transactions"
+  transactions: [String!]!
 }

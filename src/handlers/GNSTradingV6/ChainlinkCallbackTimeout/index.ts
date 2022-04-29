@@ -1,5 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
+  createOrLoadMarketOrder,
   getPendingMarketOrderId,
   removePendingMarketOrder,
 } from "../../../access/entity";
@@ -26,14 +27,14 @@ export function handleChainlinkCallbackTimeout(
 
   // read orderId from state
   const marketOrderId = getPendingMarketOrderId(orderId.toString());
-  const marketOrder = MarketOrder.load(marketOrderId);
-  if (!marketOrder) {
+  if (!marketOrderId) {
     log.error(
-      "[handleChainlinkCallbackTimeout] MarketOrder not found for orderId",
+      "[handleChainlinkCallbackTimeout] MarketOrder for OrderId {} not found in state",
       [orderId.toString()]
     );
     return;
   }
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event);
   marketOrder.status = PRICE_ORDER_STATUS.TIMED_OUT;
   log.info("[handleChainlinkCallbackTimeout] Updated MarketOrder {}", [
     marketOrderId,

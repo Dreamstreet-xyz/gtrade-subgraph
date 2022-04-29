@@ -1,5 +1,6 @@
 import { log } from "@graphprotocol/graph-ts";
 import {
+  createOrLoadSlUpdateOrder,
   getPendingSlUpdateOrderId,
   removePendingSlUpdateOrder,
 } from "../../../access/entity";
@@ -24,15 +25,18 @@ export function handleSlCanceled(event: SlCanceled): void {
 
   // update SlUpdateOrder
   const slUpdateOrderId = getPendingSlUpdateOrderId(orderId.toString());
-  const slUpdateOrder = SlUpdateOrder.load(slUpdateOrderId);
-  if (!slUpdateOrder) {
-    log.error("[handleSlUpdated] SlUpdateOrder {} not found for orderId {}", [
-      slUpdateOrderId,
-      orderId.toString(),
-    ]);
+  if (!slUpdateOrderId) {
+    log.error(
+      "[handleSlUpdated] SlUpdateOrder for OrderId {} not found in state",
+      [orderId.toString()]
+    );
     return;
   }
+  const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event);
   slUpdateOrder.status = PRICE_ORDER_STATUS.RECEIVED;
+  const txs = slUpdateOrder.transactions;
+  txs.push(event.transaction.hash.toHexString());
+  slUpdateOrder.transactions = txs;
   log.info("[handleSlCanceled] Updated SlUpdateOrder {}", [slUpdateOrderId]);
 
   // update state

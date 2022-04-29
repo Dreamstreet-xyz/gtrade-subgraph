@@ -1,7 +1,6 @@
 import { BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   OPEN_LIMIT_ORDER_STATUS,
-  PRICE_ORDER_STATUS,
   ZERO_ADDRESS,
 } from "../../../../helpers/constants";
 import { GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
@@ -9,13 +8,14 @@ import { OpenLimitOrder } from "../../../../types/schema";
 
 export function createOrLoadOpenLimitOrder(
   id: string,
-  block: ethereum.Block
+  event: ethereum.Event
 ): OpenLimitOrder {
   let openLimitOrder = OpenLimitOrder.load(id);
   if (!openLimitOrder) {
     openLimitOrder = new OpenLimitOrder(id);
-    openLimitOrder.createdAtTimestamp = block.timestamp;
-    openLimitOrder.createdAtBlockNumber = block.number;
+    openLimitOrder.createdAtTimestamp = event.block.timestamp;
+    openLimitOrder.createdAtBlockNumber = event.block.number;
+    openLimitOrder.transactions = [event.transaction.hash.toHexString()];
     openLimitOrder.tokenId = -1;
     openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.NONE;
     openLimitOrder.minPrice = BigInt.fromI32(0);
@@ -26,6 +26,11 @@ export function createOrLoadOpenLimitOrder(
     log.info("[createOrLoadOpenLimitOrder] Created new OpenLimitOrder {}", [
       id,
     ]);
+  } else {
+    const txs = openLimitOrder.transactions;
+    txs.push(event.transaction.hash.toHexString());
+    openLimitOrder.transactions = txs;
+    openLimitOrder.save();
   }
 
   return openLimitOrder;

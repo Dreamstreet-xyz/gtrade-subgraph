@@ -14,6 +14,8 @@ import {
   createOrLoadTradeInfo,
   transitionTradeToOpen,
   transitionTradeToClose,
+  createOrLoadNftOrder,
+  createOrLoadOpenLimitOrder,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -62,17 +64,16 @@ export function handleLimitExecuted(event: LimitExecuted): void {
   // update NFTOrder
   // set status to RECEIVED
   const nftOrderId = getPendingNftOrderId(orderId.toString());
-  const nftOrder = NftOrder.load(nftOrderId);
-  if (!nftOrder) {
-    log.error("[handleLimitExecuted] NftOrder {} not found for orderId {}", [
-      nftOrderId,
-      orderId.toString(),
-    ]);
+  if (!nftOrderId) {
+    log.error(
+      "[handleLimitExecuted] NftOrder for OrderId {} not found in state",
+      [orderId.toString()]
+    );
     return;
   }
+  const nftOrder = createOrLoadNftOrder(nftOrderId, event);
   nftOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   nftOrder.price = price;
-
   log.info("[handleLimitExecuted] Updated NftOrder {}", [nftOrderId]);
 
   // opening trade
@@ -84,14 +85,14 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     // update OpenLimitOrder
     // assign NftOrder to OpenLimitOrder
     const openLimitOrderId = getOpenLimitOrderId(openLimitTuple);
-    const openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
-    if (!openLimitOrder) {
+    if (!openLimitOrderId) {
       log.error(
-        "[handleLimitExecuted] OpenLimitOrder {} not found for tuple {}",
-        [openLimitOrderId, stringifyTuple(openLimitTuple)]
+        "[handleOpenLimitCanceled] OpenLimitOrder for tuple {} not found in state",
+        [stringifyTuple({ trader, pairIndex, index })]
       );
       return;
     }
+    const openLimitOrder = createOrLoadOpenLimitOrder(openLimitOrderId, event);
     openLimitOrder.nftOrder = nftOrderId;
     openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.FULFILLED;
 

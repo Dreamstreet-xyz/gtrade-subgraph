@@ -66,7 +66,7 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     cOpenLimitOrderId
   );
   const openLimitOrder = updateOpenLimitOrderFromContractObject(
-    createOrLoadOpenLimitOrder(openLimitOrderId, event.block),
+    createOrLoadOpenLimitOrder(openLimitOrderId, event),
     cOpenLimitOrder,
     false
   );

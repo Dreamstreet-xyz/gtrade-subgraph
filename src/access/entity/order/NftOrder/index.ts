@@ -9,13 +9,14 @@ import { NftOrder } from "../../../../types/schema";
 
 export function createOrLoadNftOrder(
   id: string,
-  block: ethereum.Block
+  event: ethereum.Event
 ): NftOrder {
   let nftOrder = NftOrder.load(id);
   if (!nftOrder) {
     nftOrder = new NftOrder(id);
-    nftOrder.createdAtTimestamp = block.timestamp;
-    nftOrder.createdAtBlockNumber = block.number;
+    nftOrder.createdAtTimestamp = event.block.timestamp;
+    nftOrder.createdAtBlockNumber = event.block.number;
+    nftOrder.transactions = [event.transaction.hash.toHexString()];
     nftOrder.tokenId = -1;
     nftOrder.status = PRICE_ORDER_STATUS.NONE;
     nftOrder.price = BigInt.fromI32(0);
@@ -24,6 +25,11 @@ export function createOrLoadNftOrder(
     nftOrder.price = BigInt.fromI32(0);
     nftOrder.save();
     log.info("[createOrLoadNftOrder] Created new NftOrder {}", [id]);
+  } else {
+    const txs = nftOrder.transactions;
+    txs.push(event.transaction.hash.toHexString());
+    nftOrder.transactions = txs;
+    nftOrder.save();
   }
 
   return nftOrder;

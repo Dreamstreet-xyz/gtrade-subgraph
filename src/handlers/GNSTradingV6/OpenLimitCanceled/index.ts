@@ -1,6 +1,7 @@
 import { log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "../../../access/contract";
 import {
+  createOrLoadOpenLimitOrder,
   getOpenLimitOrderId,
   removeOpenLimitOrder,
 } from "../../../access/entity";
@@ -39,14 +40,14 @@ export function handleOpenLimitCanceled(event: OpenLimitCanceled): void {
     pairIndex,
     index,
   });
-  const openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
-  if (!openLimitOrder) {
+  if (!openLimitOrderId) {
     log.error(
-      "[handleOpenLimitCanceled] OpenLimitOrder not found for tuple {}",
+      "[handleOpenLimitCanceled] OpenLimitOrder for tuple {} not found in state",
       [stringifyTuple({ trader, pairIndex, index })]
     );
     return;
   }
+  const openLimitOrder = createOrLoadOpenLimitOrder(openLimitOrderId, event);
   openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.CANCELED;
   log.info("[handleOpenLimitCanceled] Updated OpenLimitOrder {}", [
     openLimitOrderId,

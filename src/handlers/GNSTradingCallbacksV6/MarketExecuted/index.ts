@@ -10,6 +10,7 @@ import {
   createOrLoadTradeInfo,
   transitionTradeToOpen,
   transitionTradeToClose,
+  createOrLoadMarketOrder,
 } from "../../../access/entity";
 import {
   removeOpenTrade,
@@ -52,13 +53,15 @@ export function handleMarketExecuted(event: MarketExecuted): void {
 
   // update MarketOrder
   const marketOrderId = getPendingMarketOrderId(orderId.toString());
-  const marketOrder = MarketOrder.load(marketOrderId);
-  if (!marketOrder) {
-    log.error("[handleMarketExecuted] No market order found for orderId {}", [
-      orderId.toString(),
-    ]);
+  if (!marketOrderId) {
+    log.error(
+      "[handleMarketOpenCanceled] MarketOrder for OrderId {} not found in state",
+      [orderId.toString()]
+    );
     return;
   }
+
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event);
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   marketOrder.price = price;
   log.info("[handleMarketExecuted] Updated MarketOrder {}", [marketOrderId]);

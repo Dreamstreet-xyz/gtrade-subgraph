@@ -75,7 +75,7 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
     event.logIndex,
     orderId
   );
-  const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event.block);
+  const slUpdateOrder = createOrLoadSlUpdateOrder(slUpdateOrderId, event);
   slUpdateOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   slUpdateOrder.trade = trade.id;
   slUpdateOrder.type = PRICE_ORDER_TYPE.UPDATE_SL;

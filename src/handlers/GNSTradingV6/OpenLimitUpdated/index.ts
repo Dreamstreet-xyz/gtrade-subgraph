@@ -1,10 +1,12 @@
 import { log } from "@graphprotocol/graph-ts";
 import { getStorageContract } from "../../../access/contract";
 import {
+  createOrLoadOpenLimitOrder,
   getOpenLimitOrderId,
   updateOpenLimitOrderFromContractObject,
   updateTradeFromOpenLimitOrderContractObject,
 } from "../../../access/entity";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 import { OpenLimitUpdated } from "../../../types/GNSTradingV6/GNSTradingV6";
 import { OpenLimitOrder, Trade } from "../../../types/schema";
 
@@ -38,19 +40,14 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
     pairIndex,
     index,
   });
-  let openLimitOrder = OpenLimitOrder.load(openLimitOrderId);
-  if (!openLimitOrder) {
+  if (!openLimitOrderId) {
     log.error(
-      "[handleOpenLimitUpdated] OpenLimitOrder {} not found for trader {} pairIndex {} index {}",
-      [
-        openLimitOrderId,
-        trader.toHexString(),
-        pairIndex.toHexString(),
-        index.toHexString(),
-      ]
+      "[handleOpenLimitCanceled] OpenLimitOrder for tuple {} not found in state",
+      [stringifyTuple({ trader, pairIndex, index })]
     );
     return;
   }
+  let openLimitOrder = createOrLoadOpenLimitOrder(openLimitOrderId, event);
   const cOpenLimitOrder = storage.getOpenLimitOrder(trader, pairIndex, index);
   openLimitOrder = updateOpenLimitOrderFromContractObject(
     openLimitOrder,

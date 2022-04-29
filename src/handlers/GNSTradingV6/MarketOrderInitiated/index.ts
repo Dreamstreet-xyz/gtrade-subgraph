@@ -82,7 +82,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
     event.logIndex,
     orderId
   );
-  const marketOrder = createOrLoadMarketOrder(marketOrderId, event.block);
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event);
   marketOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   marketOrder.block = block;
   marketOrder.wantedPrice = wantedPrice;

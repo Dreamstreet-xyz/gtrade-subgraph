@@ -1,5 +1,8 @@
 import { log } from "@graphprotocol/graph-ts";
-import { removePendingMarketOrder } from "../../../access/entity";
+import {
+  createOrLoadMarketOrder,
+  removePendingMarketOrder,
+} from "../../../access/entity";
 import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractIdMapping/pendingMarketOrdersLookup";
 import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
 import { MarketOpenCanceled } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
@@ -21,14 +24,15 @@ export function handleMarketOpenCanceled(event: MarketOpenCanceled): void {
 
   // update MarketOrder
   const marketOrderId = getPendingMarketOrderId(orderId.toString());
-  const marketOrder = MarketOrder.load(marketOrderId);
-  if (!marketOrder) {
+  if (!marketOrderId) {
     log.error(
-      "[handleMarketOpenCanceled] No market order found for orderId {}",
+      "[handleMarketOpenCanceled] MarketOrder for OrderId {} not found in state",
       [orderId.toString()]
     );
     return;
   }
+
+  const marketOrder = createOrLoadMarketOrder(marketOrderId, event);
   marketOrder.status = PRICE_ORDER_STATUS.RECEIVED;
   log.info("[handleMarketOpenCanceled] Found market order {}", [
     marketOrder.id,
