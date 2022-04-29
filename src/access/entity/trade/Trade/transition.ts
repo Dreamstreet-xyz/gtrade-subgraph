@@ -48,13 +48,14 @@ export function transitionTradeToClose(
   if (!received) {
     received = getToClaimAmount(transaction, address);
     if (!received) {
-      log.error(
+      log.warning(
         "[transitionTradeToClose] No sent or claim amount found for trader {}",
         [trade.trader]
       );
-      return trade;
+      received = "0";
+    } else {
+      removeToClaimLookup(transaction, address);
     }
-    removeToClaimLookup(transaction, address);
   } else {
     removeSentLookup(transaction, address);
   }

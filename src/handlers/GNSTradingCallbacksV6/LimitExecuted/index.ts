@@ -171,7 +171,7 @@ export function handleLimitExecuted(event: LimitExecuted): void {
     }
     trade = transitionTradeToClose(
       trade,
-      positionSizeDai,
+      percentProfit,
       price,
       event.transaction,
       false
