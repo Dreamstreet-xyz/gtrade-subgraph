@@ -13,15 +13,11 @@
     "clean": "rimraf ./src/types ./build subgraph.yaml schema.gql",
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
-    "configure:mumbai": "yarn clean && node merge.js && yarn prepare:mumbai && yarn generate:schema && yarn codegen",
+    "configure:mumbai": "yarn clean && yarn generate:schema && yarn prepare:mumbai && yarn codegen",
     "deploy": "graph deploy --debug --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/",
     "deploy:hosted": "graph deploy --product hosted-service --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ --access-token ${GRAPH_ACCESS_TOKEN}",
     "generate:schema": "node merge.js",
-    "prepare:rinkeby": "mustache config/rinkeby.json subgraph.yaml.mustache > subgraph.yaml",
-    "prepare:mainnet": "mustache config/mainnet.json subgraph.yaml.mustache > subgraph.yaml",
     "prepare:mumbai": "mustache config/mumbai.json subgraph.yaml.mustache > subgraph.yaml",
-    "deploy:rinkeby": "yarn clean && yarn prepare:rinkeby && yarn codegen && yarn deploy b01-dao/b01-subgraph-rinkeby",
-    "deploy:mainnet": "yarn clean && yarn prepare:mainnet && yarn codegen && yarn deploy b01-dao/b01-subgraph",
     "deploy:mumbai": "yarn clean && yarn configure:mumbai && yarn deploy:hosted dreamstreet-xyz/gtrade-v6-mumbai"
   },
   "devDependencies": {
@@ -33,7 +29,6 @@
     "mustache": "^4.2.0"
   },
   "dependencies": {
-    "assemblyscript-json": "^1.1.0",
     "source-map-support": "^0.5.21"
   }
 }
