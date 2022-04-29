@@ -165,6 +165,8 @@ type MarketOrder implements PriceOrder @entity {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "OrderID associated with the order"
+  orderId: BigInt!
   "Type of order"
   type: PriceOrderType
   "Trade of the order"
@@ -202,6 +204,8 @@ type NftOrder implements PriceOrder @entity {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "OrderID associated with the order"
+  orderId: BigInt!
   "Type of order"
   type: PriceOrderType
   "NFT order type"
@@ -245,6 +249,8 @@ interface PriceOrder {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "OrderID associated with the order"
+  orderId: BigInt!
   "Type of order"
   type: PriceOrderType
   "Trade of the order"
@@ -267,6 +273,8 @@ type SlUpdateOrder implements PriceOrder @entity {
   id: ID!
   "Status of the order"
   status: PriceOrderStatus!
+  "OrderID associated with the order"
+  orderId: BigInt!
   "Type of order"
   type: PriceOrderType
   "Trade of the order"

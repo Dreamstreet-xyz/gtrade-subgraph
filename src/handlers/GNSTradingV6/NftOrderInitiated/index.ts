@@ -86,6 +86,7 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   );
   nftOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   nftOrder.type = PRICE_ORDER_TYPE_IX[aggregator.orders(orderId).value1];
+  nftOrder.orderId = orderId;
   log.info("[handleNftOrderInitiated] NftOrder created {}", [nftOrder.id]);
 
   const index = cPendingNftOrder.value4;

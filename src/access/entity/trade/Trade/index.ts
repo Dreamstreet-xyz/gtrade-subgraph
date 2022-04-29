@@ -1,4 +1,10 @@
-import { Address, ethereum, BigInt } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  ethereum,
+  BigInt,
+  crypto,
+  ByteArray,
+} from "@graphprotocol/graph-ts";
 import { TRADE_STATUS, ZERO_ADDRESS } from "../../../../helpers/constants";
 import {
   GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
@@ -28,12 +34,16 @@ export function generateTradeId(
   logIndex: BigInt,
   tradeTuple: TradeTuple
 ): string {
-  return (
-    tx.hash.toHexString() +
-    "-" +
-    logIndex.toString() +
-    generateIdFromTradeTuple(tradeTuple)
-  );
+  return crypto
+    .keccak256(
+      ByteArray.fromUTF8(
+        tx.hash.toHexString() +
+          "-" +
+          logIndex.toString() +
+          generateIdFromTradeTuple(tradeTuple)
+      )
+    )
+    .toHexString();
 }
 
 export function generateIdFromRawTradeTuple(
@@ -41,11 +51,21 @@ export function generateIdFromRawTradeTuple(
   pairIndex: BigInt,
   index: BigInt
 ): string {
-  return `${trader.toHexString()}-${pairIndex.toString()}-${index.toString()}`;
+  return crypto
+    .keccak256(
+      ByteArray.fromUTF8(
+        `${trader.toHexString()}-${pairIndex.toString()}-${index.toString()}`
+      )
+    )
+    .toHexString();
 }
 
 export function generateIdFromTradeTuple(tradeTuple: TradeTuple): string {
-  return `${tradeTuple.trader.toHexString()}-${tradeTuple.pairIndex.toString()}-${tradeTuple.index.toString()}`;
+  return generateIdFromRawTradeTuple(
+    tradeTuple.trader,
+    tradeTuple.pairIndex,
+    tradeTuple.index
+  );
 }
 
 export function createOrLoadTrade(id: string, block: ethereum.Block): Trade {

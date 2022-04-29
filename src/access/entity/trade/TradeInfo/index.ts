@@ -1,4 +1,11 @@
-import { Address, ethereum, BigInt, log } from "@graphprotocol/graph-ts";
+import {
+  Address,
+  ethereum,
+  BigInt,
+  log,
+  crypto,
+  ByteArray,
+} from "@graphprotocol/graph-ts";
 import { GFarmTradingStorageV5__openTradesInfoResult } from "../../../../types/GNSTradingV6/GFarmTradingStorageV5";
 import { TradeInfo } from "../../../../types/schema";
 import { TradeTuple, generateIdFromTradeTuple } from "../Trade";
@@ -45,12 +52,16 @@ export function generateTradeInfoId(
       tradeTuple.index.toString(),
     ]
   );
-  return (
-    tx.hash.toHexString() +
-    "-" +
-    logIndex.toString() +
-    generateIdFromTradeTuple(tradeTuple)
-  );
+  return crypto
+    .keccak256(
+      ByteArray.fromUTF8(
+        tx.hash.toHexString() +
+          "-" +
+          logIndex.toString() +
+          generateIdFromTradeTuple(tradeTuple)
+      )
+    )
+    .toHexString();
 }
 
 export function updateTradeInfoFromContractObject(
@@ -77,7 +88,7 @@ export function updateTradeInfoFromContractObject(
   );
 
   if (tokenPriceDai.equals(BigInt.fromI32(0))) {
-    throw Error("[updateTradeInfoFromContractObject] No TradeInfo");
+    throw new Error("[updateTradeInfoFromContractObject] No TradeInfo");
   }
 
   tradeInfo.tokenId = tokenId.toI32();

@@ -1,4 +1,4 @@
-import { ethereum, BigInt } from "@graphprotocol/graph-ts";
+import { ethereum, BigInt, crypto, ByteArray } from "@graphprotocol/graph-ts";
 
 /**
  * Generate a deterministic id for a given order event
@@ -12,7 +12,13 @@ export function generateOrderId(
   logIndex: BigInt,
   id: BigInt
 ): string {
-  return tx.hash.toHexString() + "-" + logIndex.toString() + id.toString();
+  return crypto
+    .keccak256(
+      ByteArray.fromUTF8(
+        tx.hash.toHexString() + "-" + logIndex.toString() + id.toString()
+      )
+    )
+    .toHexString();
 }
 
 export {

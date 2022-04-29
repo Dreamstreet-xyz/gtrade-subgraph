@@ -80,6 +80,7 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
   slUpdateOrder.trade = trade.id;
   slUpdateOrder.type = PRICE_ORDER_TYPE.UPDATE_SL;
   slUpdateOrder.newSl = newSl;
+  slUpdateOrder.orderId = orderId;
   log.info("[handleSLUpdateInitiated] Created SlUpdateOrder obj {}", [
     slUpdateOrderId,
   ]);

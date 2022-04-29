@@ -92,6 +92,7 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   marketOrder.type = open
     ? PRICE_ORDER_TYPE.MARKET_OPEN
     : PRICE_ORDER_TYPE.MARKET_CLOSE;
+  marketOrder.orderId = orderId;
   log.info("[handleMarketOrderInitiated] Created MarketOrder obj {}", [
     marketOrderId,
   ]);

@@ -12,6 +12,9 @@ type NftOrder implements PriceOrder @entity {
   "Status of the order"
   status: PriceOrderStatus!
 
+  "OrderID associated with the order"
+  orderId: BigInt!
+
   "Type of order"
   type: PriceOrderType
 
