@@ -1,3 +1,9 @@
+NOTE: The Graph compiles to WASM. This is AssemblyScript, not TypeScript. Please review the [AssemblyScript documentation](https://www.assemblyscript.org/concepts.html).
+
+Notable limitations: No JSON, deconstruction, closures, global importing.
+
+Please show successful build output when submitting PRs.
+
 # gTrade V6 Subgraph
 
 Decentralized leverage trading platform from Gains Network
