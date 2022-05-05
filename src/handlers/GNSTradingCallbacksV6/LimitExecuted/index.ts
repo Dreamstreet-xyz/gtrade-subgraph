@@ -117,7 +117,15 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       ]);
       return;
     }
-    const cTrade = storage.openTrades(trader, pairIndex, index);
+    const cTradeResp = storage.try_openTrades(trader, pairIndex, index);
+    if (cTradeResp.reverted) {
+      log.error(
+        "[handleLimitExecuted] try_openTrades reverted call to chain, possible reorg. Tuple {}",
+        [stringifyTuple({ trader, pairIndex, index })]
+      );
+      return;
+    }
+    const cTrade = cTradeResp.value;
     trade = updateTradeFromContractObject(trade, cTrade, false);
     trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info(
@@ -125,7 +133,15 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       [trade.id]
     );
 
-    const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
+    const cTradeInfoResp = storage.try_openTradesInfo(trader, pairIndex, index);
+    if (cTradeInfoResp.reverted) {
+      log.error(
+        "[handleLimitExecuted] try_openTradesInfo reverted call to chain, possible reorg. Tuple {}",
+        [stringifyTuple({ trader, pairIndex, index })]
+      );
+      return;
+    }
+    const cTradeInfo = cTradeInfoResp.value;
     const tradeInfoId = generateTradeInfoId(event.transaction, event.logIndex, {
       trader,
       pairIndex,

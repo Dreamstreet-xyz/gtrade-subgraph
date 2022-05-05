@@ -61,7 +61,15 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
     ]);
     return;
   }
-  const cTrade = storage.openTrades(trader, pairIndex, index);
+  const cTradeResp = storage.try_openTrades(trader, pairIndex, index);
+  if (cTradeResp.reverted) {
+    log.error(
+      "[handleSlUpdateInitiated] try_openTrades reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple({ trader, pairIndex, index })]
+    );
+    return;
+  }
+  const cTrade = cTradeResp.value;
   trade = updateTradeFromContractObject(trade, cTrade, false);
   log.info(
     "[handleSLUpdateInitiated] Fetched openTrades from contract and updated Trade obj {}",

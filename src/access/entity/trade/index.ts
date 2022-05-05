@@ -31,8 +31,20 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] Trade not found"
     );
   }
-  const cTrade = storage.openTrades(tuple.trader, tuple.pairIndex, tuple.index);
-  trade = updateTradeFromContractObject(trade, cTrade, false);
+  const cTradeResp = storage.try_openTrades(
+    tuple.trader,
+    tuple.pairIndex,
+    tuple.index
+  );
+  if (!cTradeResp.reverted) {
+    const cTrade = cTradeResp.value;
+    trade = updateTradeFromContractObject(trade, cTrade, false);
+  } else {
+    log.error(
+      "[updateTradeAndTradeInfoToLatestFromTuple] try_openTrades reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple(tuple)]
+    );
+  }
 
   // update TradeInfo obj from contract
   const tradeInfoId = getOpenTradeInfoId(tuple);
@@ -46,12 +58,20 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo not found"
     );
   }
-  const cTradeInfo = storage.openTradesInfo(
+  const cTradeInfoResp = storage.try_openTradesInfo(
     tuple.trader,
     tuple.pairIndex,
     tuple.index
   );
-  tradeInfo = updateTradeInfoFromContractObject(tradeInfo, cTradeInfo, false);
+  if (!cTradeInfoResp.reverted) {
+    const cTradeInfo = cTradeInfoResp.value;
+    tradeInfo = updateTradeInfoFromContractObject(tradeInfo, cTradeInfo, false);
+  } else {
+    log.error(
+      "[updateTradeAndTradeInfoToLatestFromTuple] try_openTradesInfo reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple(tuple)]
+    );
+  }
 
   if (save) {
     // save

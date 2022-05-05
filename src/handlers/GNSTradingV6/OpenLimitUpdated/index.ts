@@ -48,7 +48,19 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
     return;
   }
   let openLimitOrder = createOrLoadOpenLimitOrder(openLimitOrderId, event);
-  const cOpenLimitOrder = storage.getOpenLimitOrder(trader, pairIndex, index);
+  const cOpenLimitOrderResp = storage.try_getOpenLimitOrder(
+    trader,
+    pairIndex,
+    index
+  );
+  if (cOpenLimitOrderResp.reverted) {
+    log.error(
+      "[handleOpenLimitUpdated] try_getOpenLimitOrder reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple({ trader, pairIndex, index })]
+    );
+    return;
+  }
+  const cOpenLimitOrder = cOpenLimitOrderResp.value;
   openLimitOrder = updateOpenLimitOrderFromContractObject(
     openLimitOrder,
     cOpenLimitOrder,

@@ -70,7 +70,15 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
   createOrLoadNftHolder(nftHolder, event.block);
 
   // fetch pending order and construct NftOrder
-  const cPendingNftOrder = storage.reqID_pendingNftOrder(orderId);
+  const cPendingNftOrderRes = storage.try_reqID_pendingNftOrder(orderId);
+  if (cPendingNftOrderRes.reverted) {
+    log.warning(
+      "[handleNftOrderInitiated] PendingNftOrder reverted call to chain, possible reorg {}",
+      [orderId.toString()]
+    );
+    return;
+  }
+  const cPendingNftOrder = cPendingNftOrderRes.value;
   log.info(
     "[handleNftOrderInitiated] Fetched pendingNftOrder from contract",
     []
@@ -85,7 +93,16 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     false
   );
   nftOrder.status = PRICE_ORDER_STATUS.REQUESTED;
-  nftOrder.type = PRICE_ORDER_TYPE_IX[aggregator.orders(orderId).value1];
+  const cOrderTypeResp = aggregator.try_orders(orderId);
+  if (cOrderTypeResp.reverted) {
+    log.warning(
+      "[handleNftOrderInitiated] try_orders reverted call to chain, possible reorg {}",
+      [orderId.toString()]
+    );
+    return;
+  }
+  const cOrderType = cOrderTypeResp.value;
+  nftOrder.type = PRICE_ORDER_TYPE_IX[cOrderType.value1];
   nftOrder.orderId = orderId;
   log.info("[handleNftOrderInitiated] NftOrder created {}", [nftOrder.id]);
 

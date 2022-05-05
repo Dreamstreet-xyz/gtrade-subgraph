@@ -19,6 +19,7 @@ import {
 import { OpenLimitPlaced } from "../../../types/GNSTradingV6/GNSTradingV6";
 import { OpenLimitOrder, Trade } from "../../../types/schema";
 import { getNftRewardsContract } from "../../../access/contract/GNSNftRewardsV6";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 
 /**
  * Event is emitted when an open limit order is placed. Open limit order is placed
@@ -50,10 +51,33 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
 
   // get open limit order id
   // id is only locally unique to currently open limit orders
-  const cOpenLimitOrderId = storage.openLimitOrderIds(trader, pairIndex, index);
-
+  const cOpenLimitOrderIdResp = storage.try_openLimitOrderIds(
+    trader,
+    pairIndex,
+    index
+  );
+  if (cOpenLimitOrderIdResp.reverted) {
+    log.error(
+      "[handleOpenLimitPlaced] try_openLimitOrderIds reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple({ trader, pairIndex, index })]
+    );
+    return;
+  }
+  const cOpenLimitOrderId = cOpenLimitOrderIdResp.value;
   // get open limit order
-  const cOpenLimitOrder = storage.getOpenLimitOrder(trader, pairIndex, index);
+  const cOpenLimitOrderResp = storage.try_getOpenLimitOrder(
+    trader,
+    pairIndex,
+    index
+  );
+  if (cOpenLimitOrderResp.reverted) {
+    log.error(
+      "[handleOpenLimitPlaced] try_getOpenLimitOrder reverted call to chain, possible reorg. Tuple {}",
+      [stringifyTuple({ trader, pairIndex, index })]
+    );
+    return;
+  }
+  const cOpenLimitOrder = cOpenLimitOrderResp.value;
   log.info(
     "[handleOpenLimitPlaced] Fetched openLimitOrderId from contract {}",
     [cOpenLimitOrderId.toString()]

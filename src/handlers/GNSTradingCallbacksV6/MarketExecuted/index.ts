@@ -17,6 +17,7 @@ import {
   removeOpenTradeInfo,
 } from "../../../access/entity/trade/ContractIdMapping";
 import { getPendingMarketOrderId } from "../../../access/entity/trade/ContractIdMapping/pendingMarketOrdersLookup";
+import { stringifyTuple } from "../../../access/entity/trade/Trade";
 import { PRICE_ORDER_STATUS, TRADE_STATUS } from "../../../helpers/constants";
 import { MarketExecuted } from "../../../types/GNSTradingCallbacksV6/GNSTradingCallbacksV6";
 import { MarketOrder, Trade, TradeInfo } from "../../../types/schema";
@@ -78,12 +79,28 @@ export function handleMarketExecuted(event: MarketExecuted): void {
 
   if (open) {
     // should be able to use 't' from event but for certainty, reading state
-    const cTrade = storage.openTrades(trader, pairIndex, index);
+    const cTradeResp = storage.try_openTrades(trader, pairIndex, index);
+    if (cTradeResp.reverted) {
+      log.error(
+        "[handleMarketExecuted] try_openTrades reverted call to chain, possible reorg. Tuple {}",
+        [stringifyTuple({ trader, pairIndex, index })]
+      );
+      return;
+    }
+    const cTrade = cTradeResp.value;
     trade = updateTradeFromContractObject(trade, cTrade, false);
     trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info("[handleMarketExecuted] Updated Trade {} to OPEN", [trade.id]);
 
-    const cTradeInfo = storage.openTradesInfo(trader, pairIndex, index);
+    const cTradeInfoResp = storage.try_openTradesInfo(trader, pairIndex, index);
+    if (cTradeInfoResp.reverted) {
+      log.error(
+        "[handleMarketExecuted] try_openTradesInfo reverted call to chain, possible reorg. Tuple {}",
+        [stringifyTuple({ trader, pairIndex, index })]
+      );
+      return;
+    }
+    const cTradeInfo = cTradeInfoResp.value;
     const tradeInfoId = generateTradeInfoId(event.transaction, event.logIndex, {
       trader,
       pairIndex,

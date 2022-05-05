@@ -56,7 +56,15 @@ export function handleMarketOrderInitiated(event: MarketOrderInitiated): void {
   const storage = getStorageContract();
 
   // read pending market order from storage
-  const cPendingMarketOrder = storage.reqID_pendingMarketOrder(orderId);
+  const cPendingMarketOrderResp = storage.try_reqID_pendingMarketOrder(orderId);
+  if (cPendingMarketOrderResp.reverted) {
+    log.error(
+      "[handleMarketOrderInitiated] try_reqID_pendingMarketOrder reverted call to chain, possible reorg. OrderId {}",
+      [orderId.toString()]
+    );
+    return;
+  }
+  const cPendingMarketOrder = cPendingMarketOrderResp.value;
   const _trade = cPendingMarketOrder.value0;
   const block = cPendingMarketOrder.value1;
   const wantedPrice = cPendingMarketOrder.value2;

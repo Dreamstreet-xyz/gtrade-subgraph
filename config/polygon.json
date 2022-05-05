@@ -1,23 +1,27 @@
 {
-  "network": "mumbai",
+  "network": "matic",
   "gnsTradingV6": {
-    "address": "0x49370DC7319d8439C895015cBAD8E35D381e7d73",
-    "startBlock": 25940000
+    "address": "0xF8a140DB8B05BEC52C7e86D0D40D72f8e54Fe559",
+    "startBlock": 24932436
   },
   "gnsTradingCallbacksV6": {
-    "address": "0x3087aC91A2D49f84D795d6c2Ce324845360f57c8",
-    "startBlock": 25940000
+    "address": "0xcf63914F5160E596bC574bF4fD52C13A8d270e28",
+    "startBlock": 24932436
   },
   "gfarmTradingStorageV5": {
-    "address": "0x4d2df485c608aa55a23d8d98dd2b4fa24ba0f2cf",
-    "startBlock": 25940000
+    "address": "0xaee4d11a16b2bc65edd6416fb626eb404a6d65bd",
+    "startBlock": 24932436
   },
   "gnsPriceAggregatorV6": {
-    "address": "0x16E4F4956f39dd37E170C9f7A4AFeCD4025F272a",
-    "startBlock": 25940000
+    "address": "0x5FB47355828c0902AcBBE759CEe1b8342c41178b",
+    "startBlock": 24932436
   },
   "gnsNftRewardsV6": {
     "address": "0x3470756E5B490a974Bc25FeEeEb24c11102f5268",
-    "startBlock": 25940000
+    "startBlock": 24932436
+  },
+  "gnsTradingVaultV5": {
+    "address": "0xd7052EC0Fe1fe25b20B7D65F6f3d490fCE58804f",
+    "startBlock": 24932436
   }
 }

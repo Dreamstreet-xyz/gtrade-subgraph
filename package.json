@@ -14,11 +14,14 @@
     "build": "graph build",
     "codegen": "graph codegen --output-dir src/types/",
     "configure:mumbai": "yarn clean && yarn generate:schema && yarn prepare:mumbai && yarn codegen",
+    "configure:polygon": "yarn clean && yarn generate:schema && yarn prepare:polygon && yarn codegen",
     "deploy": "graph deploy --debug --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/",
     "deploy:hosted": "graph deploy --product hosted-service --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/ --access-token ${GRAPH_ACCESS_TOKEN}",
     "generate:schema": "node merge.js",
     "prepare:mumbai": "mustache config/mumbai.json subgraph.yaml.mustache > subgraph.yaml",
-    "deploy:mumbai": "yarn clean && yarn configure:mumbai && yarn deploy:hosted dreamstreet-xyz/gtrade-v6-mumbai"
+    "prepare:polygon": "mustache config/polygon.json subgraph.yaml.mustache > subgraph.yaml",
+    "deploy:mumbai": "yarn clean && yarn configure:mumbai && yarn deploy:hosted dreamstreet-xyz/gtrade-v6-mumbai",
+    "deploy:polygon": "yarn clean && yarn configure:polygon && yarn deploy:hosted dreamstreet-xyz/gtrade-v6"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "0.26.0",
