@@ -61,11 +61,19 @@ export function handleOpenLimitUpdated(event: OpenLimitUpdated): void {
     return;
   }
   const cOpenLimitOrder = cOpenLimitOrderResp.value;
-  openLimitOrder = updateOpenLimitOrderFromContractObject(
+  const updateOlo = updateOpenLimitOrderFromContractObject(
     openLimitOrder,
     cOpenLimitOrder,
     false
   );
+  if (!updateOlo) {
+    log.error(
+      "[handleOpenLimitUpdated] Failed to update OpenLimitOrder Tuple {}",
+      [stringifyTuple({ trader, pairIndex, index })]
+    );
+    return;
+  }
+  openLimitOrder = updateOlo;
   log.info(
     "[handleOpenLimitUpdated] Fetched openLimitOrder from contract and updated OpenLimitOrder obj {}",
     [openLimitOrderId]

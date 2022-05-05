@@ -44,11 +44,13 @@ export function updateOpenLimitOrderFromContractObject(
   openLimitOrder: OpenLimitOrder,
   cOpenLimitOrder: GFarmTradingStorageV5__getOpenLimitOrderResultValue0Struct,
   save: boolean
-): OpenLimitOrder {
+): OpenLimitOrder | undefined {
   if (cOpenLimitOrder.trader.toHexString() == ZERO_ADDRESS) {
-    throw new Error(
-      "[updateOpenLimitOrderFromContractObject] No cOpenLimitOrder"
+    log.error(
+      "[updateOpenLimitOrderFromContractObject] No cOpenLimitOrder",
+      []
     );
+    return;
   }
 
   openLimitOrder.spreadReductionP = cOpenLimitOrder.spreadReductionP;
@@ -60,5 +62,5 @@ export function updateOpenLimitOrderFromContractObject(
   if (save) {
     openLimitOrder.save();
   }
-  return openLimitOrder;
+  return openLimitOrder as OpenLimitOrder;
 }

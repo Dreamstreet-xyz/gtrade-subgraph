@@ -43,7 +43,7 @@ export function updateNftOrderFromContractObject(
   nftOrder: NftOrder,
   cNftOrder: GFarmTradingStorageV5__reqID_pendingNftOrderResult,
   save: boolean
-): NftOrder {
+): NftOrder | undefined {
   const nftHolder = cNftOrder.value0;
   const nftId = cNftOrder.value1.toI32();
   const trader = cNftOrder.value2;
@@ -52,7 +52,8 @@ export function updateNftOrderFromContractObject(
   const orderType = cNftOrder.value5;
 
   if (trader.toHexString() == ZERO_ADDRESS) {
-    throw new Error("[updateNftOrderFromContractObject] No cNftOrder");
+    log.error("[updateNftOrderFromContractObject] No cNftOrder", []);
+    return;
   }
 
   nftOrder.nftHolder = nftHolder.toHexString();
@@ -63,5 +64,5 @@ export function updateNftOrderFromContractObject(
     nftOrder.save();
   }
 
-  return nftOrder;
+  return nftOrder as NftOrder;
 }

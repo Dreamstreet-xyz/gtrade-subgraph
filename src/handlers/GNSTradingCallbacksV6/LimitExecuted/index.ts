@@ -126,7 +126,15 @@ export function handleLimitExecuted(event: LimitExecuted): void {
       return;
     }
     const cTrade = cTradeResp.value;
-    trade = updateTradeFromContractObject(trade, cTrade, false);
+    const tradeUpdate = updateTradeFromContractObject(trade, cTrade, false);
+    if (!tradeUpdate) {
+      log.error(
+        "[handleLimitExecuted] Failed to update Trade {} from contract object",
+        [trade.id]
+      );
+      return;
+    }
+    trade = tradeUpdate;
     trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info(
       "[handleLimitExecuted] Fetched openTrades from contract and updated Trade obj {}",

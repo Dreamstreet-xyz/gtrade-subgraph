@@ -70,7 +70,15 @@ export function handleSlUpdateInitiated(event: SlUpdateInitiated): void {
     return;
   }
   const cTrade = cTradeResp.value;
-  trade = updateTradeFromContractObject(trade, cTrade, false);
+  const tradeUpdate = updateTradeFromContractObject(trade, cTrade, false);
+  if (!tradeUpdate) {
+    log.error("[handleSLUpdateInitiated] Trade {} not updated for tuple {}", [
+      tradeId,
+      stringifyTuple(tuple),
+    ]);
+    return;
+  }
+  trade = tradeUpdate;
   log.info(
     "[handleSLUpdateInitiated] Fetched openTrades from contract and updated Trade obj {}",
     [tradeId]

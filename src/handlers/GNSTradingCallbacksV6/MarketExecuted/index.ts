@@ -88,7 +88,15 @@ export function handleMarketExecuted(event: MarketExecuted): void {
       return;
     }
     const cTrade = cTradeResp.value;
-    trade = updateTradeFromContractObject(trade, cTrade, false);
+    const tradeUpdate = updateTradeFromContractObject(trade, cTrade, false);
+    if (!tradeUpdate) {
+      log.error(
+        "[handleMarketExecuted] Failed to update trade for orderId {}, market order {}",
+        [orderId.toString(), marketOrderId]
+      );
+      return;
+    }
+    trade = tradeUpdate;
     trade = transitionTradeToOpen(trade, positionSizeDai, price, false);
     log.info("[handleMarketExecuted] Updated Trade {} to OPEN", [trade.id]);
 

@@ -81,7 +81,12 @@ export function handleMarketCloseCanceled(event: MarketCloseCanceled): void {
   if (cTrade && cTrade.value0.toHexString() != ZERO_ADDRESS) {
     log.info("[handleMarketCloseCanceled] Trade is still open", []);
     // update whole object from contract
-    trade = updateTradeFromContractObject(trade, cTrade, false);
+    const tradeUpdate = updateTradeFromContractObject(trade, cTrade, false);
+    if (!tradeUpdate) {
+      log.error("[handleMarketCloseCanceled] Trade update failed", []);
+      return;
+    }
+    trade = tradeUpdate;
   } else {
     log.info("[handleMarketCloseCanceled] Trade is closed", []);
     // trade is closed

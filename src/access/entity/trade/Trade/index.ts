@@ -4,6 +4,7 @@ import {
   BigInt,
   crypto,
   ByteArray,
+  log,
 } from "@graphprotocol/graph-ts";
 import { TRADE_STATUS, ZERO_ADDRESS } from "../../../../helpers/constants";
 import {
@@ -103,7 +104,7 @@ export function updateTradeFromContractObject(
   trade: Trade,
   cTrade: GFarmTradingStorageV5__openTradesResult,
   save: boolean
-): Trade {
+): Trade | undefined {
   const trader = cTrade.value0;
   const pairIndex = cTrade.value1;
   const index = cTrade.value2;
@@ -116,7 +117,8 @@ export function updateTradeFromContractObject(
   const sl = cTrade.value9;
 
   if (trader.toHexString() == ZERO_ADDRESS) {
-    throw new Error("[updateTradeFromContractObject] No trade");
+    log.error("[updateTradeFromContractObject] No trade", []);
+    return;
   }
 
   trade.trader = trader.toHexString();
@@ -133,7 +135,7 @@ export function updateTradeFromContractObject(
   if (save) {
     trade.save();
   }
-  return trade;
+  return trade as Trade;
 }
 
 export function updateTradeFromOpenLimitOrderContractObject(

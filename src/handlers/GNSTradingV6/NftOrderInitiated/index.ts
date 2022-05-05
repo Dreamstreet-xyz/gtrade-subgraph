@@ -92,10 +92,17 @@ export function handleNftOrderInitiated(event: NftOrderInitiated): void {
     cPendingNftOrder,
     false
   );
+  if (!nftOrder) {
+    log.error(
+      "[handleNftOrderInitiated] Failed to create or load NftOrder for OrderId {}",
+      [orderId.toString()]
+    );
+    return;
+  }
   nftOrder.status = PRICE_ORDER_STATUS.REQUESTED;
   const cOrderTypeResp = aggregator.try_orders(orderId);
   if (cOrderTypeResp.reverted) {
-    log.warning(
+    log.error(
       "[handleNftOrderInitiated] try_orders reverted call to chain, possible reorg {}",
       [orderId.toString()]
     );
