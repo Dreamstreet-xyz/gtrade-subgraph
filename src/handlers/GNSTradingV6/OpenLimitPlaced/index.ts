@@ -89,11 +89,19 @@ export function handleOpenLimitPlaced(event: OpenLimitPlaced): void {
     event.logIndex,
     cOpenLimitOrderId
   );
-  const openLimitOrder = updateOpenLimitOrderFromContractObject(
+  const openLimitOrderUpdate = updateOpenLimitOrderFromContractObject(
     createOrLoadOpenLimitOrder(openLimitOrderId, event),
     cOpenLimitOrder,
     false
   );
+  if (!openLimitOrderUpdate) {
+    log.error(
+      "[handleOpenLimitPlaced] Failed to update OpenLimitOrder from contract object {}",
+      [openLimitOrderId]
+    );
+    return;
+  }
+  const openLimitOrder = openLimitOrderUpdate;
   openLimitOrder.status = OPEN_LIMIT_ORDER_STATUS.OPEN;
   log.info("[handleOpenLimitPlaced] Constructed OpenLimitOrder {}", [
     openLimitOrderId,

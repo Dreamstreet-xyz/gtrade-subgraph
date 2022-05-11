@@ -104,7 +104,7 @@ export function updateTradeFromContractObject(
   trade: Trade,
   cTrade: GFarmTradingStorageV5__openTradesResult,
   save: boolean
-): Trade | undefined {
+): Trade | null {
   const trader = cTrade.value0;
   const pairIndex = cTrade.value1;
   const index = cTrade.value2;
@@ -118,7 +118,7 @@ export function updateTradeFromContractObject(
 
   if (trader.toHexString() == ZERO_ADDRESS) {
     log.error("[updateTradeFromContractObject] No trade", []);
-    return;
+    return null;
   }
 
   trade.trader = trader.toHexString();

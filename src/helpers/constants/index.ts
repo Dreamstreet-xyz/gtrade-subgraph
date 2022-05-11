@@ -79,7 +79,7 @@ class Networks {
 }
 
 export const NETWORKS: Networks = {
-  POLYGON: "polygon",
+  POLYGON: "matic",
   MUMBAI: "mumbai",
 };
 
@@ -185,13 +185,13 @@ export const MUMBAI: NetworkAddresses = {
 };
 
 export const POLYGON: NetworkAddresses = {
-  gnsTradingV6: "0x49370DC7319d8439C895015cBAD8E35D381e7d73",
+  gnsTradingV6: "0xF8a140DB8B05BEC52C7e86D0D40D72f8e54Fe559",
 
-  gnsTradingCallbacksV6: "0x3087aC91A2D49f84D795d6c2Ce324845360f57c8",
+  gnsTradingCallbacksV6: "0xcf63914F5160E596bC574bF4fD52C13A8d270e28",
 
-  gfarmTradingStorageV5: "0x4d2df485c608aa55a23d8d98dd2b4fa24ba0f2cf",
+  gfarmTradingStorageV5: "0xaee4d11a16b2bc65edd6416fb626eb404a6d65bd",
 
-  gnsPriceAggregatorV6: "0x16E4F4956f39dd37E170C9f7A4AFeCD4025F272a",
+  gnsPriceAggregatorV6: "0x5FB47355828c0902AcBBE759CEe1b8342c41178b",
 
   gnsNftRewardsV6: "0x3470756E5B490a974Bc25FeEeEb24c11102f5268",
 };

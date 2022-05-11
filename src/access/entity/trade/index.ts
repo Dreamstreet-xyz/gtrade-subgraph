@@ -18,7 +18,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
   storage: GFarmTradingStorageV5,
   tuple: TradeTuple,
   save: boolean
-): TradeAndTradeInfo | undefined {
+): TradeAndTradeInfo | null {
   // update Trade obj from contract
   const tradeId = getOpenTradeId(tuple);
   let trade = Trade.load(tradeId);
@@ -27,7 +27,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] Trade {} not found for tuple {}",
       [tradeId, stringifyTuple(tuple)]
     );
-    return;
+    return null;
   }
   const cTradeResp = storage.try_openTrades(
     tuple.trader,
@@ -42,7 +42,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
         "[updateTradeAndTradeInfoToLatestFromTuple] Trade {} not updated for tuple {}",
         [tradeId, stringifyTuple(tuple)]
       );
-      return;
+      return null;
     }
     trade = tradeUpdate;
   } else {
@@ -60,7 +60,7 @@ export function updateTradeAndTradeInfoToLatestFromTuple(
       "[updateTradeAndTradeInfoToLatestFromTuple] TradeInfo {} not found for tuple {}",
       [tradeInfoId, stringifyTuple(tuple)]
     );
-    return;
+    return null;
   }
   const cTradeInfoResp = storage.try_openTradesInfo(
     tuple.trader,
